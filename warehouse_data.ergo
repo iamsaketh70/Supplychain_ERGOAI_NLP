@@ -1,0 +1,228 @@
+// ============================================================================
+// WAREHOUSE DATA — Smart Warehouse Optimization System
+// Static facts: grid, zones, shelves, products, robots, orders, environment
+// ============================================================================
+
+// ---- GRID DEFINITION (6 columns x 6 rows) ----
+grid_cell(1,1). grid_cell(1,2). grid_cell(1,3). grid_cell(1,4). grid_cell(1,5). grid_cell(1,6).
+grid_cell(2,1). grid_cell(2,2). grid_cell(2,3). grid_cell(2,4). grid_cell(2,5). grid_cell(2,6).
+grid_cell(3,1). grid_cell(3,2). grid_cell(3,3). grid_cell(3,4). grid_cell(3,5). grid_cell(3,6).
+grid_cell(4,1). grid_cell(4,2). grid_cell(4,3). grid_cell(4,4). grid_cell(4,5). grid_cell(4,6).
+grid_cell(5,1). grid_cell(5,2). grid_cell(5,3). grid_cell(5,4). grid_cell(5,5). grid_cell(5,6).
+grid_cell(6,1). grid_cell(6,2). grid_cell(6,3). grid_cell(6,4). grid_cell(6,5). grid_cell(6,6).
+
+grid_max_x(6).
+grid_max_y(6).
+
+// ---- HIGHWAYS (row 1 is the main corridor) ----
+is_highway(1,1). is_highway(1,2). is_highway(1,3). is_highway(1,4). is_highway(1,5). is_highway(1,6).
+
+// ---- PICKING STATIONS ----
+is_picking_station(1,1).
+is_picking_station(1,6).
+
+// ---- ZONES ----
+zone(zone_A). zone(zone_B). zone(zone_C). zone(zone_D).
+
+zone_type(zone_A, ambient).
+zone_type(zone_B, ambient).
+zone_type(zone_C, freezer).
+zone_type(zone_D, hazmat).
+
+zone_humidity(zone_A, low).
+zone_humidity(zone_B, high).
+zone_humidity(zone_C, low).
+zone_humidity(zone_D, low).
+
+// ---- SHELVES with grid positions and zone assignments ----
+// Zone A shelves (rows 2-3, cols 1-3)
+shelf(shelf_A1). shelf_position(shelf_A1, 2, 2). shelf_in_zone(shelf_A1, zone_A).
+shelf(shelf_A2). shelf_position(shelf_A2, 2, 3). shelf_in_zone(shelf_A2, zone_A).
+shelf(shelf_A3). shelf_position(shelf_A3, 3, 2). shelf_in_zone(shelf_A3, zone_A).
+shelf(shelf_A4). shelf_position(shelf_A4, 3, 3). shelf_in_zone(shelf_A4, zone_A).
+
+// Zone B shelves (rows 2-3, cols 4-6)
+shelf(shelf_B1). shelf_position(shelf_B1, 2, 4). shelf_in_zone(shelf_B1, zone_B).
+shelf(shelf_B2). shelf_position(shelf_B2, 2, 5). shelf_in_zone(shelf_B2, zone_B).
+shelf(shelf_B3). shelf_position(shelf_B3, 3, 4). shelf_in_zone(shelf_B3, zone_B).
+shelf(shelf_B4). shelf_position(shelf_B4, 3, 5). shelf_in_zone(shelf_B4, zone_B).
+
+// Zone C shelves — freezer (rows 4-5, cols 1-3)
+shelf(shelf_C1). shelf_position(shelf_C1, 4, 2). shelf_in_zone(shelf_C1, zone_C).
+shelf(shelf_C2). shelf_position(shelf_C2, 4, 3). shelf_in_zone(shelf_C2, zone_C).
+shelf(shelf_C3). shelf_position(shelf_C3, 5, 2). shelf_in_zone(shelf_C3, zone_C).
+shelf(shelf_C4). shelf_position(shelf_C4, 5, 3). shelf_in_zone(shelf_C4, zone_C).
+
+// Zone D shelves — hazmat (rows 4-5, cols 4-6)
+shelf(shelf_D1). shelf_position(shelf_D1, 4, 4). shelf_in_zone(shelf_D1, zone_D).
+shelf(shelf_D2). shelf_position(shelf_D2, 4, 5). shelf_in_zone(shelf_D2, zone_D).
+shelf(shelf_D3). shelf_position(shelf_D3, 5, 4). shelf_in_zone(shelf_D3, zone_D).
+shelf(shelf_D4). shelf_position(shelf_D4, 5, 5). shelf_in_zone(shelf_D4, zone_D).
+
+shelf_level(shelf_A1, 3). shelf_level(shelf_A2, 3). shelf_level(shelf_A3, 2). shelf_level(shelf_A4, 2).
+shelf_level(shelf_B1, 4). shelf_level(shelf_B2, 4). shelf_level(shelf_B3, 1). shelf_level(shelf_B4, 1).
+shelf_level(shelf_C1, 2). shelf_level(shelf_C2, 2). shelf_level(shelf_C3, 3). shelf_level(shelf_C4, 3).
+shelf_level(shelf_D1, 1). shelf_level(shelf_D2, 1). shelf_level(shelf_D3, 6). shelf_level(shelf_D4, 7).
+
+// ---- ROBOTS (initial positions and state) ----
+robot(robot1). robot_position(robot1, 1, 2). robot_carries(robot1, none).
+robot(robot2). robot_position(robot2, 1, 5). robot_carries(robot2, none).
+
+// ---- PRODUCT PROPERTIES ----
+// (atom names match the ML facts file exactly)
+
+product_property(white_hanging_heart_tlight_holder, fragile).
+product_property(red_hanging_heart_tlight_holder, fragile).
+product_property(regency_cakestand_3_tier, heavy).
+product_property(regency_cakestand_3_tier, fragile).
+product_property(natural_slate_heart_chalkboard, heavy).
+product_property(assorted_colour_bird_ornament, fragile).
+product_property(heart_of_wicker_small, fragile).
+product_property(heart_of_wicker_large, fragile).
+product_property(jumbo_bag_red_retrospot, heavy).
+product_property(jumbo_bag_baroque_black_white, heavy).
+product_property(jumbo_bag_strawberry, heavy).
+product_property(jumbo_bag_apples, heavy).
+product_property(red_retrospot_charlotte_bag, fragile).
+product_property(party_bunting, paper_goods).
+product_property(spotty_bunting, paper_goods).
+product_property(tea_time_party_bunting, paper_goods).
+product_property(wooden_picture_frame_white_finish, fragile).
+product_property(recipe_box_pantry_yellow_design, paper_goods).
+product_property(lunch_bag_red_retrospot, fragile).
+product_property(lunch_bag_woodland, fragile).
+product_property(lunch_bag_black_skull, fragile).
+product_property(lunch_bag_cars_blue, fragile).
+product_property(lunch_bag_spaceboy_design, fragile).
+product_property(lunch_bag_pink_polkadot, fragile).
+product_property(set_of_3_cake_tins_pantry_design, fragile).
+product_property(set_of_6_spice_tins_pantry_design, fragile).
+product_property(green_regency_teacup_and_saucer, fragile).
+product_property(jam_making_set_with_jars, fragile).
+product_property(pack_of_72_retrospot_cake_cases, paper_goods).
+product_property(zinc_metal_heart_decoration, fragile).
+product_property(alarm_clock_bakelike_red, fragile).
+product_property(alarm_clock_bakelike_green, fragile).
+product_property(alarm_clock_bakelike_pink, fragile).
+product_property(victorian_glass_hanging_tlight, fragile).
+product_property(rabbit_night_light, electronic).
+product_property(set_of_4_pantry_jelly_moulds, fragile).
+product_property(roses_regency_teacup_and_saucer, fragile).
+
+// Frozen items (intentionally placed outside freezer to trigger spoilage alerts)
+product_property(ice_cream_sundae_lip_gloss, frozen).
+product_property(chocolate_hot_water_bottle, frozen).
+
+// Hazmat items
+product_property(jasmine_votive_candle, flammable).
+product_property(pink_pillar_candle_silver_flock, flammable).
+product_property(retrospot_candle_medium, flammable).
+product_property(set3_ocean_scent_candle_jewel_box, flammable).
+product_property(potting_shed_rose_candle, flammable).
+product_property(industrial_cleaner_concentrate, oxidizer).
+product_property(bleach_surface_cleaner, oxidizer).
+
+// ---- SHELF INVENTORY: shelf_stock(Shelf, Product, Quantity) ----
+
+// Zone A — general home decor
+shelf_stock(shelf_A1, white_hanging_heart_tlight_holder, 10).
+shelf_stock(shelf_A1, red_hanging_heart_tlight_holder, 8).
+shelf_stock(shelf_A1, victorian_glass_hanging_tlight, 6).
+
+shelf_stock(shelf_A2, regency_cakestand_3_tier, 5).
+shelf_stock(shelf_A2, natural_slate_heart_chalkboard, 7).
+shelf_stock(shelf_A2, heart_of_wicker_small, 12).
+
+shelf_stock(shelf_A3, assorted_colour_bird_ornament, 15).
+shelf_stock(shelf_A3, zinc_metal_heart_decoration, 10).
+shelf_stock(shelf_A3, wooden_picture_frame_white_finish, 8).
+
+shelf_stock(shelf_A4, heart_of_wicker_large, 6).
+shelf_stock(shelf_A4, alarm_clock_bakelike_red, 4).
+shelf_stock(shelf_A4, alarm_clock_bakelike_green, 4).
+shelf_stock(shelf_A4, alarm_clock_bakelike_pink, 3).
+
+// Zone B — bags, bunting, paper goods (high humidity zone — triggers paper damage alerts)
+shelf_stock(shelf_B1, jumbo_bag_red_retrospot, 20).
+shelf_stock(shelf_B1, jumbo_bag_baroque_black_white, 15).
+shelf_stock(shelf_B1, jumbo_bag_strawberry, 12).
+
+shelf_stock(shelf_B2, party_bunting, 18).
+shelf_stock(shelf_B2, spotty_bunting, 14).
+shelf_stock(shelf_B2, tea_time_party_bunting, 10).
+
+shelf_stock(shelf_B3, recipe_box_pantry_yellow_design, 9).
+shelf_stock(shelf_B3, pack_of_72_retrospot_cake_cases, 25).
+shelf_stock(shelf_B3, set_of_3_cake_tins_pantry_design, 7).
+
+shelf_stock(shelf_B4, red_retrospot_charlotte_bag, 11).
+shelf_stock(shelf_B4, jumbo_bag_apples, 8).
+shelf_stock(shelf_B4, lunch_bag_pink_polkadot, 6).
+
+// Zone C — freezer zone
+shelf_stock(shelf_C1, ice_cream_sundae_lip_gloss, 20).
+shelf_stock(shelf_C1, chocolate_hot_water_bottle, 15).
+
+shelf_stock(shelf_C2, set_of_6_spice_tins_pantry_design, 10).
+shelf_stock(shelf_C2, green_regency_teacup_and_saucer, 8).
+
+shelf_stock(shelf_C3, jam_making_set_with_jars, 6).
+shelf_stock(shelf_C3, set_of_4_pantry_jelly_moulds, 12).
+shelf_stock(shelf_C3, roses_regency_teacup_and_saucer, 7).
+
+shelf_stock(shelf_C4, rabbit_night_light, 9).
+shelf_stock(shelf_C4, set_of_6_herb_tins_sketchbook, 5).
+
+// Zone D — hazmat / candles / chemicals
+shelf_stock(shelf_D1, jasmine_votive_candle, 20).
+shelf_stock(shelf_D1, pink_pillar_candle_silver_flock, 15).
+
+shelf_stock(shelf_D2, retrospot_candle_medium, 18).
+shelf_stock(shelf_D2, set3_ocean_scent_candle_jewel_box, 10).
+shelf_stock(shelf_D2, potting_shed_rose_candle, 12).
+
+shelf_stock(shelf_D3, industrial_cleaner_concentrate, 30).
+shelf_stock(shelf_D3, bleach_surface_cleaner, 25).
+
+// Deliberately misplaced items for violation detection:
+// Lunch bags in zone A (far from their co-purchased items in zone B)
+shelf_stock(shelf_A4, lunch_bag_red_retrospot, 5).
+shelf_stock(shelf_A4, lunch_bag_woodland, 4).
+
+// Frozen item outside freezer (zone B instead of zone C)
+shelf_stock(shelf_B4, ice_cream_sundae_lip_gloss, 3).
+
+// Flammable + oxidizer on same shelf in zone D (hazmat reaction trigger)
+shelf_stock(shelf_D3, potting_shed_rose_candle, 5).
+
+// Heavy item on high shelf (shelf_D4 has level 7)
+shelf_stock(shelf_D4, regency_cakestand_3_tier, 3).
+shelf_stock(shelf_D4, natural_slate_heart_chalkboard, 2).
+
+// ---- ORDERS ----
+order(order_1001).
+order_line(order_1001, white_hanging_heart_tlight_holder, 2).
+order_line(order_1001, red_hanging_heart_tlight_holder, 1).
+order_line(order_1001, heart_of_wicker_small, 3).
+
+order(order_1002).
+order_line(order_1002, jumbo_bag_red_retrospot, 1).
+order_line(order_1002, party_bunting, 2).
+order_line(order_1002, spotty_bunting, 1).
+order_line(order_1002, recipe_box_pantry_yellow_design, 1).
+
+order(order_1003).
+order_line(order_1003, regency_cakestand_3_tier, 1).
+order_line(order_1003, jam_making_set_with_jars, 1).
+order_line(order_1003, set_of_3_cake_tins_pantry_design, 2).
+order_line(order_1003, set_of_6_spice_tins_pantry_design, 1).
+
+order(order_1004).
+order_line(order_1004, lunch_bag_red_retrospot, 1).
+order_line(order_1004, lunch_bag_woodland, 1).
+order_line(order_1004, lunch_bag_cars_blue, 1).
+order_line(order_1004, red_retrospot_charlotte_bag, 1).
+
+// ---- INITIAL DELIVERY TRACKING ----
+// delivered(Order, Product, Qty) — starts empty, built up during fulfillment
+// (no initial facts — all zeros)

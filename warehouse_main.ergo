@@ -1,0 +1,754 @@
+// ============================================================================
+// SMART WAREHOUSE OPTIMIZATION SYSTEM — ErgoAI
+// ML-Driven (Skip-Gram) + Robot Automation + Safety Constraints
+// ============================================================================
+//
+// This system integrates:
+//   1. ML predictions from a skip-gram neural network (frequently bought together)
+//   2. Full robot movement, pickup, putdown, and delivery actions
+//   3. Safety constraints: hazmat, spoilage, collision, highway blocking, etc.
+//   4. Race condition guards for concurrent robot operations
+//   5. Order fulfillment simulation with inventory tracking
+//
+// Load in ErgoAI Studio:  ['warehouse_main.ergo'].
+// ============================================================================
+
+
+// =========================================================================
+// SECTION A: DATA LOADING
+// =========================================================================
+
+:- ['warehouse_data.ergo'].
+:- ['ergo_facts_neural_network.txt'].
+
+
+// =========================================================================
+// SECTION B: ROBOT MOVEMENT ACTIONS
+// =========================================================================
+
+// --- Helper: get current robot position ---
+robot_at(?Robot, ?X, ?Y) :- robot_position(?Robot, ?X, ?Y).
+
+// --- Helper: robot is loaded (carrying a shelf) ---
+robot_is_loaded(?Robot) :-
+    robot(?Robot),
+    robot_carries(?Robot, ?Shelf),
+    ?Shelf \== none.
+
+// --- Helper: robot is unloaded ---
+robot_is_unloaded(?Robot) :-
+    robot(?Robot),
+    robot_carries(?Robot, none).
+
+// --- Target cell after a move ---
+target_cell(?Robot, ?DX, ?DY, ?NX, ?NY) :-
+    robot_position(?Robot, ?X, ?Y),
+    ?NX \is ?X + ?DX,
+    ?NY \is ?Y + ?DY.
+
+// --- CONSTRAINT: grid boundary check ---
+within_grid(?X, ?Y) :- grid_cell(?X, ?Y).
+
+move_blocked(grid_boundary, ?Robot, ?DX, ?DY) :-
+    robot(?Robot),
+    target_cell(?Robot, ?DX, ?DY, ?NX, ?NY),
+    \naf within_grid(?NX, ?NY).
+
+// --- CONSTRAINT: collision — another robot already at target ---
+move_blocked(robot_collision, ?Robot, ?DX, ?DY) :-
+    robot(?Robot),
+    target_cell(?Robot, ?DX, ?DY, ?NX, ?NY),
+    robot_position(?Other, ?NX, ?NY),
+    ?Other \== ?Robot.
+
+// --- CONSTRAINT: position swap — two robots exchanging positions simultaneously ---
+move_blocked(position_swap, ?Robot, ?DX, ?DY) :-
+    robot(?Robot),
+    robot_position(?Robot, ?X, ?Y),
+    target_cell(?Robot, ?DX, ?DY, ?NX, ?NY),
+    robot_position(?Other, ?NX, ?NY),
+    ?Other \== ?Robot,
+    target_cell(?Other, ?DX2, ?DY2, ?X, ?Y).
+
+// --- CONSTRAINT: loaded robot cannot move under a stationary shelf ---
+move_blocked(loaded_under_shelf, ?Robot, ?DX, ?DY) :-
+    robot_is_loaded(?Robot),
+    target_cell(?Robot, ?DX, ?DY, ?NX, ?NY),
+    shelf_position(?OtherShelf, ?NX, ?NY),
+    robot_carries(?Robot, ?CarriedShelf),
+    ?OtherShelf \== ?CarriedShelf.
+
+// --- CONSTRAINT: unloaded robot cannot enter picking station ---
+move_blocked(unloaded_at_picking, ?Robot, ?DX, ?DY) :-
+    robot_is_unloaded(?Robot),
+    target_cell(?Robot, ?DX, ?DY, ?NX, ?NY),
+    is_picking_station(?NX, ?NY).
+
+// --- Aggregate: move is valid if no block reason exists ---
+can_move(?Robot, ?DX, ?DY) :-
+    robot(?Robot),
+    target_cell(?Robot, ?DX, ?DY, ?NX, ?NY),
+    within_grid(?NX, ?NY),
+    \naf move_blocked(?, ?Robot, ?DX, ?DY).
+
+// --- Execute move (transactional state update) ---
+%move(?Robot, ?DX, ?DY) :-
+    can_move(?Robot, ?DX, ?DY),
+    robot_position(?Robot, ?OldX, ?OldY),
+    target_cell(?Robot, ?DX, ?DY, ?NX, ?NY),
+    delete{robot_position(?Robot, ?OldX, ?OldY)},
+    insert{robot_position(?Robot, ?NX, ?NY)},
+    (robot_carries(?Robot, ?Shelf), ?Shelf \== none -->>
+        shelf_position(?Shelf, ?SX, ?SY),
+        delete{shelf_position(?Shelf, ?SX, ?SY)},
+        insert{shelf_position(?Shelf, ?NX, ?NY)}
+    ;
+        \true
+    ),
+    fmt_write('ACTION: Robot %S moved from (%S,%S) to (%S,%S)\n',
+              f(?Robot, ?OldX, ?OldY, ?NX, ?NY))@\io.
+
+// --- Move rejection with reason ---
+%try_move(?Robot, ?DX, ?DY) :-
+    (can_move(?Robot, ?DX, ?DY) -->>
+        %move(?Robot, ?DX, ?DY)
+    ;
+        move_blocked(?Reason, ?Robot, ?DX, ?DY),
+        fmt_write('BLOCKED: Robot %S move (%S,%S) denied — %S\n',
+                  f(?Robot, ?DX, ?DY, ?Reason))@\io
+    ).
+
+
+// =========================================================================
+// SECTION C: PICKUP AND PUTDOWN ACTIONS
+// =========================================================================
+
+// --- PRECONDITION: can_pickup ---
+// Robot must be at the shelf location, not already carrying a shelf
+can_pickup(?Robot, ?Shelf) :-
+    robot(?Robot),
+    shelf(?Shelf),
+    robot_position(?Robot, ?X, ?Y),
+    shelf_position(?Shelf, ?X, ?Y),
+    robot_carries(?Robot, none).
+
+pickup_blocked(already_carrying, ?Robot, ?Shelf) :-
+    robot(?Robot),
+    shelf(?Shelf),
+    robot_is_loaded(?Robot).
+
+pickup_blocked(not_at_shelf, ?Robot, ?Shelf) :-
+    robot(?Robot),
+    shelf(?Shelf),
+    robot_position(?Robot, ?RX, ?RY),
+    shelf_position(?Shelf, ?SX, ?SY),
+    (?RX \== ?SX ; ?RY \== ?SY).
+
+// --- Execute pickup ---
+%pickup(?Robot, ?Shelf) :-
+    can_pickup(?Robot, ?Shelf),
+    delete{robot_carries(?Robot, none)},
+    insert{robot_carries(?Robot, ?Shelf)},
+    fmt_write('ACTION: Robot %S picked up %S\n', f(?Robot, ?Shelf))@\io.
+
+%try_pickup(?Robot, ?Shelf) :-
+    (can_pickup(?Robot, ?Shelf) -->>
+        %pickup(?Robot, ?Shelf)
+    ;
+        pickup_blocked(?Reason, ?Robot, ?Shelf),
+        fmt_write('BLOCKED: Robot %S pickup of %S denied — %S\n',
+                  f(?Robot, ?Shelf, ?Reason))@\io
+    ).
+
+// --- PRECONDITION: can_putdown ---
+// Robot must be carrying the shelf, not on a highway, no other shelf at location
+can_putdown(?Robot, ?Shelf) :-
+    robot(?Robot),
+    shelf(?Shelf),
+    robot_carries(?Robot, ?Shelf),
+    robot_position(?Robot, ?X, ?Y),
+    \naf is_highway(?X, ?Y),
+    \naf other_shelf_at(?Robot, ?Shelf, ?X, ?Y).
+
+other_shelf_at(?Robot, ?Shelf, ?X, ?Y) :-
+    shelf_position(?OtherShelf, ?X, ?Y),
+    ?OtherShelf \== ?Shelf.
+
+putdown_blocked(not_carrying, ?Robot, ?Shelf) :-
+    robot(?Robot),
+    shelf(?Shelf),
+    robot_carries(?Robot, ?Carried),
+    ?Carried \== ?Shelf.
+
+putdown_blocked(on_highway, ?Robot, ?Shelf) :-
+    robot(?Robot),
+    shelf(?Shelf),
+    robot_carries(?Robot, ?Shelf),
+    robot_position(?Robot, ?X, ?Y),
+    is_highway(?X, ?Y).
+
+putdown_blocked(shelf_occupied, ?Robot, ?Shelf) :-
+    robot(?Robot),
+    shelf(?Shelf),
+    robot_carries(?Robot, ?Shelf),
+    robot_position(?Robot, ?X, ?Y),
+    other_shelf_at(?Robot, ?Shelf, ?X, ?Y).
+
+// --- Execute putdown ---
+%putdown(?Robot, ?Shelf) :-
+    can_putdown(?Robot, ?Shelf),
+    delete{robot_carries(?Robot, ?Shelf)},
+    insert{robot_carries(?Robot, none)},
+    fmt_write('ACTION: Robot %S put down %S\n', f(?Robot, ?Shelf))@\io.
+
+%try_putdown(?Robot, ?Shelf) :-
+    (can_putdown(?Robot, ?Shelf) -->>
+        %putdown(?Robot, ?Shelf)
+    ;
+        putdown_blocked(?Reason, ?Robot, ?Shelf),
+        fmt_write('BLOCKED: Robot %S putdown of %S denied — %S\n',
+                  f(?Robot, ?Shelf, ?Reason))@\io
+    ).
+
+
+// =========================================================================
+// SECTION D: DELIVER ACTION
+// =========================================================================
+
+// How much of a product is still needed for an order
+remaining_need(?Order, ?Product, ?Need) :-
+    order_line(?Order, ?Product, ?Ordered),
+    (delivered(?Order, ?Product, ?Del) -->> ?Need \is ?Ordered - ?Del
+    ;
+        ?Need \is ?Ordered
+    ),
+    ?Need > 0.
+
+// --- PRECONDITION: can_deliver ---
+can_deliver(?Robot, ?Product, ?Qty, ?Order) :-
+    robot(?Robot),
+    order(?Order),
+    robot_position(?Robot, ?X, ?Y),
+    is_picking_station(?X, ?Y),
+    robot_carries(?Robot, ?Shelf),
+    ?Shelf \== none,
+    shelf_stock(?Shelf, ?Product, ?Available),
+    ?Available >= ?Qty,
+    ?Qty > 0,
+    remaining_need(?Order, ?Product, ?Need),
+    ?Need >= ?Qty.
+
+deliver_blocked(not_at_picking_station, ?Robot, ?Product, ?Qty, ?Order) :-
+    robot(?Robot),
+    order(?Order),
+    robot_position(?Robot, ?X, ?Y),
+    \naf is_picking_station(?X, ?Y).
+
+deliver_blocked(not_carrying_shelf, ?Robot, ?Product, ?Qty, ?Order) :-
+    robot(?Robot),
+    order(?Order),
+    robot_carries(?Robot, none).
+
+deliver_blocked(product_not_on_shelf, ?Robot, ?Product, ?Qty, ?Order) :-
+    robot(?Robot),
+    order(?Order),
+    robot_carries(?Robot, ?Shelf),
+    ?Shelf \== none,
+    \naf shelf_stock(?Shelf, ?Product, ?).
+
+deliver_blocked(insufficient_stock, ?Robot, ?Product, ?Qty, ?Order) :-
+    robot(?Robot),
+    order(?Order),
+    robot_carries(?Robot, ?Shelf),
+    ?Shelf \== none,
+    shelf_stock(?Shelf, ?Product, ?Available),
+    ?Available < ?Qty.
+
+deliver_blocked(exceeds_order_need, ?Robot, ?Product, ?Qty, ?Order) :-
+    robot(?Robot),
+    order(?Order),
+    remaining_need(?Order, ?Product, ?Need),
+    ?Qty > ?Need.
+
+deliver_blocked(wrong_product, ?Robot, ?Product, ?Qty, ?Order) :-
+    robot(?Robot),
+    order(?Order),
+    \naf order_line(?Order, ?Product, ?).
+
+// --- Execute deliver ---
+%deliver(?Robot, ?Product, ?Qty, ?Order) :-
+    can_deliver(?Robot, ?Product, ?Qty, ?Order),
+    robot_carries(?Robot, ?Shelf),
+    shelf_stock(?Shelf, ?Product, ?OldStock),
+    ?NewStock \is ?OldStock - ?Qty,
+    delete{shelf_stock(?Shelf, ?Product, ?OldStock)},
+    insert{shelf_stock(?Shelf, ?Product, ?NewStock)},
+    (delivered(?Order, ?Product, ?OldDel) -->>
+        ?NewDel \is ?OldDel + ?Qty,
+        delete{delivered(?Order, ?Product, ?OldDel)},
+        insert{delivered(?Order, ?Product, ?NewDel)}
+    ;
+        insert{delivered(?Order, ?Product, ?Qty)}
+    ),
+    fmt_write('ACTION: Robot %S delivered %S x%S for %S from %S\n',
+              f(?Robot, ?Product, ?Qty, ?Order, ?Shelf))@\io.
+
+%try_deliver(?Robot, ?Product, ?Qty, ?Order) :-
+    (can_deliver(?Robot, ?Product, ?Qty, ?Order) -->>
+        %deliver(?Robot, ?Product, ?Qty, ?Order)
+    ;
+        deliver_blocked(?Reason, ?Robot, ?Product, ?Qty, ?Order),
+        fmt_write('BLOCKED: Delivery of %S x%S for %S denied — %S\n',
+                  f(?Product, ?Qty, ?Order, ?Reason))@\io
+    ).
+
+
+// =========================================================================
+// SECTION E: STATE CONSTRAINTS (always-on invariants)
+// =========================================================================
+
+// --- No shelf on highway ---
+state_violation(shelf_on_highway, ?Shelf, ?X, ?Y) :-
+    shelf(?Shelf),
+    shelf_position(?Shelf, ?X, ?Y),
+    is_highway(?X, ?Y).
+
+// --- No two robots at the same cell ---
+state_violation(robot_collision, ?R1, ?R2, ?X, ?Y) :-
+    robot(?R1),
+    robot(?R2),
+    ?R1 @< ?R2,
+    robot_position(?R1, ?X, ?Y),
+    robot_position(?R2, ?X, ?Y).
+
+// --- No two shelves at the same cell ---
+state_violation(shelf_collision, ?S1, ?S2, ?X, ?Y) :-
+    shelf(?S1),
+    shelf(?S2),
+    ?S1 @< ?S2,
+    shelf_position(?S1, ?X, ?Y),
+    shelf_position(?S2, ?X, ?Y).
+
+// --- Race condition: a robot must complete its current action before starting another ---
+state_violation(race_condition, ?Robot) :-
+    robot(?Robot),
+    robot_in_transit(?Robot).
+
+// --- Shelf tracks robot position when carried ---
+shelf_follows_robot(?Robot, ?Shelf, ?X, ?Y) :-
+    robot_carries(?Robot, ?Shelf),
+    ?Shelf \== none,
+    robot_position(?Robot, ?X, ?Y).
+
+
+// =========================================================================
+// SECTION F: SAFETY ALERT RULES
+// =========================================================================
+
+// 1. HAZMAT REACTION — oxidizer and flammable on same shelf
+alert(hazmat_reaction, ?Item1, ?Item2, ?Shelf) :-
+    product_property(?Item1, oxidizer),
+    product_property(?Item2, flammable),
+    shelf_stock(?Shelf, ?Item1, ?Q1), ?Q1 > 0,
+    shelf_stock(?Shelf, ?Item2, ?Q2), ?Q2 > 0,
+    ?Item1 @< ?Item2.
+
+// 2. SPOILAGE — frozen item not in freezer zone
+alert(spoilage_risk, ?Item, ?Shelf, ?Zone) :-
+    product_property(?Item, frozen),
+    shelf_stock(?Shelf, ?Item, ?Q), ?Q > 0,
+    shelf_in_zone(?Shelf, ?Zone),
+    zone_type(?Zone, ?ZType),
+    ?ZType \== freezer.
+
+// 3. HEAVY ITEM TOO HIGH — heavy product on shelf level > 5
+alert(heavy_fall_risk, ?Item, ?Shelf, ?Level) :-
+    product_property(?Item, heavy),
+    shelf_stock(?Shelf, ?Item, ?Q), ?Q > 0,
+    shelf_level(?Shelf, ?Level),
+    ?Level > 5.
+
+// 4. HUMIDITY DAMAGE — paper goods in high humidity zone
+alert(humidity_damage, ?Item, ?Shelf, ?Zone) :-
+    product_property(?Item, paper_goods),
+    shelf_stock(?Shelf, ?Item, ?Q), ?Q > 0,
+    shelf_in_zone(?Shelf, ?Zone),
+    zone_humidity(?Zone, high).
+
+// 5. ROBOT COLLISION — two robots at same cell (live check)
+alert(robot_collision, ?R1, ?R2, loc(?X,?Y)) :-
+    state_violation(robot_collision, ?R1, ?R2, ?X, ?Y).
+
+// 6. HIGHWAY BLOCKAGE — shelf on highway
+alert(highway_block, ?Shelf, ?X, ?Y) :-
+    state_violation(shelf_on_highway, ?Shelf, ?X, ?Y).
+
+// 7. PROTOCOL ERROR — unloaded robot at picking station
+alert(protocol_error, ?Robot, ?X, ?Y) :-
+    robot(?Robot),
+    robot_is_unloaded(?Robot),
+    robot_position(?Robot, ?X, ?Y),
+    is_picking_station(?X, ?Y).
+
+// 8. UNSAFE MOVEMENT — loaded robot at a cell with another shelf
+alert(unsafe_movement, ?Robot, ?OtherShelf, loc(?X,?Y)) :-
+    robot(?Robot),
+    robot_is_loaded(?Robot),
+    robot_position(?Robot, ?X, ?Y),
+    robot_carries(?Robot, ?Carried),
+    shelf_position(?OtherShelf, ?X, ?Y),
+    ?OtherShelf \== ?Carried.
+
+// 9. FRAGILE HANDLING — fragile item on heavy-load shelf (level > 5)
+alert(fragile_risk, ?Item, ?Shelf, ?Level) :-
+    product_property(?Item, fragile),
+    shelf_stock(?Shelf, ?Item, ?Q), ?Q > 0,
+    shelf_level(?Shelf, ?Level),
+    ?Level > 5.
+
+// 10. ELECTRONIC + FREEZER — electronic item in freezer zone
+alert(electronic_in_freezer, ?Item, ?Shelf, ?Zone) :-
+    product_property(?Item, electronic),
+    shelf_stock(?Shelf, ?Item, ?Q), ?Q > 0,
+    shelf_in_zone(?Shelf, ?Zone),
+    zone_type(?Zone, freezer).
+
+
+// =========================================================================
+// SECTION G: ML-DRIVEN WAREHOUSE OPTIMIZATION
+// =========================================================================
+
+// Helper: find which zone an item is stored in
+item_in_zone(?Item, ?Zone) :-
+    shelf_stock(?Shelf, ?Item, ?Q), ?Q > 0,
+    shelf_in_zone(?Shelf, ?Zone).
+
+// Helper: find which shelf an item is on
+item_on_shelf(?Item, ?Shelf) :-
+    shelf_stock(?Shelf, ?Item, ?Q), ?Q > 0.
+
+// 1. ML CO-LOCATION ALERT: frequently bought together but in different zones
+ml_colocation_alert(?Item1, ?Zone1, ?Item2, ?Zone2) :-
+    frequently_bought_together(?Item1, ?Item2),
+    item_in_zone(?Item1, ?Zone1),
+    item_in_zone(?Item2, ?Zone2),
+    ?Zone1 \== ?Zone2.
+
+// 2. ML RECOMMENDATION: suggest moving item closer to co-purchased items
+// Find items that have more co-purchase partners in another zone than their own
+ml_recommend_move(?Item, ?CurrentZone, ?BetterZone) :-
+    item_in_zone(?Item, ?CurrentZone),
+    zone(?BetterZone),
+    ?BetterZone \== ?CurrentZone,
+    ml_partner_count_in_zone(?Item, ?BetterZone, ?BetterCount),
+    ml_partner_count_in_zone(?Item, ?CurrentZone, ?CurrentCount),
+    ?BetterCount > ?CurrentCount.
+
+ml_partner_count_in_zone(?Item, ?Zone, ?Count) :-
+    ?Count = count{?Partner |
+        frequently_bought_together(?Item, ?Partner),
+        item_in_zone(?Partner, ?Zone)
+    },
+    ?Count > 0.
+
+// 3. OPTIMAL ZONE: the zone with most co-purchase partners
+optimal_zone_for(?Item, ?BestZone) :-
+    item_in_zone(?Item, ?_AnyZone),
+    ?BestZone = max{?Zone, ?C |
+        ml_partner_count_in_zone(?Item, ?Zone, ?C)
+    }.
+
+// 4. PICKING EFFICIENCY: how many distinct zones an order must visit
+order_zone_count(?Order, ?ZoneCount) :-
+    order(?Order),
+    ?ZoneCount = count{?Zone |
+        order_line(?Order, ?Product, ?_Qty),
+        item_in_zone(?Product, ?Zone)
+    }.
+
+// 5. ML DISTANCE ALERT: co-purchased items in very distant shelves
+ml_distance_alert(?Item1, ?Item2, ?Dist) :-
+    frequently_bought_together(?Item1, ?Item2),
+    item_on_shelf(?Item1, ?S1),
+    item_on_shelf(?Item2, ?S2),
+    shelf_position(?S1, ?X1, ?Y1),
+    shelf_position(?S2, ?X2, ?Y2),
+    ?DX \is abs(?X1 - ?X2),
+    ?DY \is abs(?Y1 - ?Y2),
+    ?Dist \is ?DX + ?DY,
+    ?Dist > 4.
+
+
+// =========================================================================
+// SECTION H: ORDER FULFILLMENT SIMULATION
+// =========================================================================
+
+// --- Order status tracking ---
+order_status(?Order, fulfilled) :-
+    order(?Order),
+    \naf has_remaining_need(?Order).
+
+order_status(?Order, in_progress) :-
+    order(?Order),
+    has_remaining_need(?Order),
+    has_some_delivery(?Order).
+
+order_status(?Order, pending) :-
+    order(?Order),
+    has_remaining_need(?Order),
+    \naf has_some_delivery(?Order).
+
+has_remaining_need(?Order) :-
+    remaining_need(?Order, ?_, ?Need),
+    ?Need > 0.
+
+has_some_delivery(?Order) :-
+    delivered(?Order, ?_, ?Qty),
+    ?Qty > 0.
+
+// --- Find which shelf has a product needed by an order ---
+shelf_for_order_product(?Order, ?Product, ?Shelf, ?Available) :-
+    remaining_need(?Order, ?Product, ?_Need),
+    shelf_stock(?Shelf, ?Product, ?Available),
+    ?Available > 0.
+
+// --- Navigate robot one step toward target (Manhattan movement) ---
+%move_toward(?Robot, ?TX, ?TY) :-
+    robot_position(?Robot, ?CX, ?CY),
+    (?CX \== ?TX -->>
+        (?CX < ?TX -->> ?DX = 1 ; ?DX = -1),
+        ?DY = 0,
+        %try_move(?Robot, ?DX, ?DY)
+    ; ?CY \== ?TY -->>
+        ?DX = 0,
+        (?CY < ?TY -->> ?DY = 1 ; ?DY = -1),
+        %try_move(?Robot, ?DX, ?DY)
+    ;
+        fmt_write('NAV: Robot %S already at (%S,%S)\n', f(?Robot, ?TX, ?TY))@\io
+    ).
+
+// --- Navigate robot fully to target (iterative) ---
+%navigate_to(?Robot, ?TX, ?TY) :-
+    robot_position(?Robot, ?TX, ?TY),
+    !.
+%navigate_to(?Robot, ?TX, ?TY) :-
+    %move_toward(?Robot, ?TX, ?TY),
+    %navigate_to(?Robot, ?TX, ?TY).
+
+// --- Fulfill a single order line: find shelf, go get it, deliver, return shelf ---
+%fulfill_line(?Robot, ?Order, ?Product, ?Qty) :-
+    fmt_write('\n--- Fulfilling: %S x%S for %S ---\n', f(?Product, ?Qty, ?Order))@\io,
+    // Find a shelf with the product
+    shelf_for_order_product(?Order, ?Product, ?Shelf, ?_Available),
+    shelf_position(?Shelf, ?SX, ?SY),
+    shelf_in_zone(?Shelf, ?Zone),
+    fmt_write('  Source: %S at (%S,%S) in %S\n', f(?Shelf, ?SX, ?SY, ?Zone))@\io,
+    // Navigate to shelf
+    %navigate_to(?Robot, ?SX, ?SY),
+    // Pick up shelf
+    %try_pickup(?Robot, ?Shelf),
+    // Navigate to picking station (1,1)
+    %navigate_to(?Robot, 1, 1),
+    // Deliver
+    %try_deliver(?Robot, ?Product, ?Qty, ?Order),
+    // Navigate back to shelf home position
+    %navigate_to(?Robot, ?SX, ?SY),
+    // Put shelf back
+    %try_putdown(?Robot, ?Shelf),
+    fmt_write('  Line complete: %S x%S\n', f(?Product, ?Qty))@\io.
+
+// --- Fulfill an entire order ---
+%fulfill_order(?Order) :-
+    order(?Order),
+    fmt_write('\n========================================\n', f())@\io,
+    fmt_write('FULFILLING ORDER: %S\n', f(?Order))@\io,
+    fmt_write('========================================\n', f())@\io,
+    // Process each order line using robot1
+    forall(order_line(?Order, ?Product, ?Qty))^(
+        remaining_need(?Order, ?Product, ?ActualNeed),
+        (?ActualNeed > 0 -->>
+            %fulfill_line(robot1, ?Order, ?Product, ?ActualNeed)
+        ;
+            fmt_write('  Already fulfilled: %S\n', f(?Product))@\io
+        )
+    ),
+    fmt_write('ORDER %S STATUS: ', f(?Order))@\io,
+    order_status(?Order, ?Status),
+    fmt_write('%S\n', f(?Status))@\io.
+
+
+// =========================================================================
+// SECTION I: REPORT GENERATION
+// =========================================================================
+
+// --- Safety Report ---
+%safety_report :-
+    fmt_write('\n====================================================\n', f())@\io,
+    fmt_write('          WAREHOUSE SAFETY REPORT\n', f())@\io,
+    fmt_write('====================================================\n\n', f())@\io,
+
+    fmt_write('[HAZMAT REACTIONS]\n', f())@\io,
+    forall(alert(hazmat_reaction, ?I1, ?I2, ?S))^(
+        fmt_write('  CRITICAL: %S + %S on %S\n', f(?I1, ?I2, ?S))@\io
+    ),
+
+    fmt_write('\n[SPOILAGE RISKS]\n', f())@\io,
+    forall(alert(spoilage_risk, ?I, ?S, ?Z))^(
+        fmt_write('  WARNING: Frozen item %S on %S in non-freezer %S\n', f(?I, ?S, ?Z))@\io
+    ),
+
+    fmt_write('\n[HEAVY FALL RISKS]\n', f())@\io,
+    forall(alert(heavy_fall_risk, ?I, ?S, ?L))^(
+        fmt_write('  WARNING: Heavy item %S on %S at level %S\n', f(?I, ?S, ?L))@\io
+    ),
+
+    fmt_write('\n[HUMIDITY DAMAGE RISKS]\n', f())@\io,
+    forall(alert(humidity_damage, ?I, ?S, ?Z))^(
+        fmt_write('  WARNING: Paper item %S on %S in humid %S\n', f(?I, ?S, ?Z))@\io
+    ),
+
+    fmt_write('\n[FRAGILE RISKS]\n', f())@\io,
+    forall(alert(fragile_risk, ?I, ?S, ?L))^(
+        fmt_write('  CAUTION: Fragile item %S on %S at level %S\n', f(?I, ?S, ?L))@\io
+    ),
+
+    fmt_write('\n[ELECTRONIC IN FREEZER]\n', f())@\io,
+    forall(alert(electronic_in_freezer, ?I, ?S, ?Z))^(
+        fmt_write('  WARNING: Electronic %S on %S in %S\n', f(?I, ?S, ?Z))@\io
+    ),
+
+    fmt_write('\n[ROBOT COLLISIONS]\n', f())@\io,
+    forall(alert(robot_collision, ?R1, ?R2, ?Loc))^(
+        fmt_write('  CRITICAL: %S and %S at %S\n', f(?R1, ?R2, ?Loc))@\io
+    ),
+
+    fmt_write('\n[HIGHWAY BLOCKAGES]\n', f())@\io,
+    forall(alert(highway_block, ?S, ?X, ?Y))^(
+        fmt_write('  CRITICAL: %S blocking highway at (%S,%S)\n', f(?S, ?X, ?Y))@\io
+    ),
+
+    fmt_write('\n[PROTOCOL ERRORS]\n', f())@\io,
+    forall(alert(protocol_error, ?R, ?X, ?Y))^(
+        fmt_write('  ERROR: Unloaded %S at picking station (%S,%S)\n', f(?R, ?X, ?Y))@\io
+    ),
+
+    fmt_write('\n====================================================\n', f())@\io.
+
+
+// --- ML Optimization Report ---
+%ml_report :-
+    fmt_write('\n====================================================\n', f())@\io,
+    fmt_write('       ML-DRIVEN OPTIMIZATION REPORT\n', f())@\io,
+    fmt_write('====================================================\n\n', f())@\io,
+
+    fmt_write('[CO-LOCATION ALERTS — items bought together but in different zones]\n', f())@\io,
+    forall(ml_colocation_alert(?I1, ?Z1, ?I2, ?Z2))^(
+        fmt_write('  %S (%S) <-> %S (%S)\n', f(?I1, ?Z1, ?I2, ?Z2))@\io
+    ),
+
+    fmt_write('\n[MOVE RECOMMENDATIONS — items with more partners in another zone]\n', f())@\io,
+    forall(ml_recommend_move(?I, ?CZ, ?BZ))^(
+        fmt_write('  SUGGEST: Move %S from %S to %S\n', f(?I, ?CZ, ?BZ))@\io
+    ),
+
+    fmt_write('\n[ORDER PICKING EFFICIENCY]\n', f())@\io,
+    forall(order_zone_count(?O, ?ZC))^(
+        fmt_write('  %S requires visiting %S zone(s)\n', f(?O, ?ZC))@\io
+    ),
+
+    fmt_write('\n====================================================\n', f())@\io.
+
+
+// --- Order Status Report ---
+%order_report :-
+    fmt_write('\n====================================================\n', f())@\io,
+    fmt_write('            ORDER STATUS REPORT\n', f())@\io,
+    fmt_write('====================================================\n\n', f())@\io,
+
+    forall(order(?O))^(
+        order_status(?O, ?Status),
+        fmt_write('Order %S: %S\n', f(?O, ?Status))@\io,
+        forall(order_line(?O, ?P, ?Qty))^(
+            (remaining_need(?O, ?P, ?Rem) -->>
+                ?Done \is ?Qty - ?Rem,
+                fmt_write('  %S: ordered=%S delivered=%S remaining=%S\n',
+                          f(?P, ?Qty, ?Done, ?Rem))@\io
+            ;
+                fmt_write('  %S: ordered=%S delivered=%S remaining=0\n',
+                          f(?P, ?Qty, ?Qty))@\io
+            )
+        ),
+        fmt_write('\n', f())@\io
+    ),
+    fmt_write('====================================================\n', f())@\io.
+
+
+// --- Inventory Report ---
+%inventory_report :-
+    fmt_write('\n====================================================\n', f())@\io,
+    fmt_write('           WAREHOUSE INVENTORY REPORT\n', f())@\io,
+    fmt_write('====================================================\n\n', f())@\io,
+
+    forall(shelf(?S))^(
+        shelf_in_zone(?S, ?Z),
+        shelf_position(?S, ?X, ?Y),
+        fmt_write('%S at (%S,%S) in %S:\n', f(?S, ?X, ?Y, ?Z))@\io,
+        forall(shelf_stock(?S, ?P, ?Q))^(
+            fmt_write('  %S  qty=%S\n', f(?P, ?Q))@\io
+        ),
+        fmt_write('\n', f())@\io
+    ),
+    fmt_write('====================================================\n', f())@\io.
+
+
+// --- Full Warehouse Report ---
+%full_report :-
+    %safety_report,
+    %ml_report,
+    %order_report,
+    %inventory_report.
+
+
+// --- Robot Status Report ---
+%robot_report :-
+    fmt_write('\n====================================================\n', f())@\io,
+    fmt_write('             ROBOT STATUS REPORT\n', f())@\io,
+    fmt_write('====================================================\n\n', f())@\io,
+    forall(robot(?R))^(
+        robot_position(?R, ?X, ?Y),
+        robot_carries(?R, ?C),
+        fmt_write('  %S at (%S,%S) carrying: %S\n', f(?R, ?X, ?Y, ?C))@\io
+    ),
+    fmt_write('\n====================================================\n', f())@\io.
+
+
+// =========================================================================
+// SECTION J: EMBEDDED QUERIES (auto-run on load)
+// =========================================================================
+
+?- fmt_write('\n\n', f())@\io.
+?- fmt_write('============================================================\n', f())@\io.
+?- fmt_write('  SMART WAREHOUSE OPTIMIZATION SYSTEM — ErgoAI\n', f())@\io.
+?- fmt_write('  ML-Driven Skip-Gram + Robot Automation + Safety\n', f())@\io.
+?- fmt_write('============================================================\n\n', f())@\io.
+?- fmt_write('System loaded successfully.\n', f())@\io.
+?- fmt_write('Available commands:\n', f())@\io.
+?- fmt_write('  %safety_report     — Show all safety violations\n', f())@\io.
+?- fmt_write('  %ml_report         — Show ML optimization recommendations\n', f())@\io.
+?- fmt_write('  %order_report      — Show order statuses\n', f())@\io.
+?- fmt_write('  %inventory_report  — Show shelf inventory\n', f())@\io.
+?- fmt_write('  %robot_report      — Show robot positions\n', f())@\io.
+?- fmt_write('  %full_report       — Run all reports\n', f())@\io.
+?- fmt_write('  %fulfill_order(order_1001)  — Fulfill an order\n', f())@\io.
+?- fmt_write('  %try_move(robot1,1,0)       — Move robot one step\n', f())@\io.
+?- fmt_write('  %try_pickup(robot1,shelf_A1) — Pick up a shelf\n', f())@\io.
+?- fmt_write('  %try_deliver(robot1,item,qty,order) — Deliver item\n', f())@\io.
+?- fmt_write('\n', f())@\io.
+
+// Auto-run safety report on load to show violations
+?- %safety_report.
+
+
+// ============================================================================
+// END OF FILE
+// ============================================================================

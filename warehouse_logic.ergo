@@ -1,0 +1,45 @@
+// --- SMART WAREHOUSE OPTIMIZER (SAFE VERSION) ---
+
+// 1. Load the ML Predictions
+// OPTION A: Relative Path (Try this first - easiest)
+// This works if you saved this file in the SAME folder as the text file.
+:- include('ergo_facts_neural_network.txt').
+
+// OPTION B: Absolute Path (Use this if Option A fails)
+// IMPORTANT: You MUST keep the single quotes ' ' around the path!
+// Replace 'YourName' with your actual computer username.
+// :- include('C:/Users/YourName/Desktop/WarehouseProject/ergo_facts_neural_network.txt').
+
+// 2. Define the Warehouse Layout
+location(alarm_clock_bakelike_red, shelf_A1).
+location(alarm_clock_bakelike_green, shelf_A1). 
+location(alarm_clock_bakelike_pink, shelf_A2).
+location(alarm_clock_bakelike_ivory, shelf_B1). // Problem Item
+
+location(lunch_bag_red_retrospot, shelf_C1).
+location(lunch_bag_woodland, shelf_C2).
+location(lunch_bag_pink_polkadot, shelf_D1).    // Problem Item
+
+// 3. Define Zone Rules
+shelf_in_zone(shelf_A1, zone_A).
+shelf_in_zone(shelf_A2, zone_A).
+shelf_in_zone(shelf_B1, zone_B).
+shelf_in_zone(shelf_C1, zone_C).
+shelf_in_zone(shelf_C2, zone_C).
+shelf_in_zone(shelf_D1, zone_D).
+
+// 4. The Logic Rules
+
+// Rule: Alert IF frequently bought together BUT in different zones
+optimization_alert(Item1, Zone1, Item2, Zone2) :-
+    frequently_bought_together(Item1, Item2),
+    location(Item1, Shelf1),
+    location(Item2, Shelf2),
+    shelf_in_zone(Shelf1, Zone1),
+    shelf_in_zone(Shelf2, Zone2),
+    Zone1 \== Zone2.
+
+// 5. Simplified Output Rule (No formatting function)
+// This will just list the items and zones directly
+recommendation(Item1, Zone1, Item2, Zone2) :-
+    optimization_alert(Item1, Zone1, Item2, Zone2).
