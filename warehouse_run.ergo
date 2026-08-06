@@ -1,3 +1,240 @@
+// ============================================================================
+// WAREHOUSE RUN FILE (single-load)
+// This file contains: warehouse_data + ML facts + warehouse_main rules
+// Load only this file in Ergo Listener.
+// ============================================================================
+// ============================================================================
+// WAREHOUSE DATA - Smart Warehouse Optimization System
+// Static facts: grid, zones, shelves, products, robots, orders, environment
+// ============================================================================
+
+// ---- GRID DEFINITION (6 columns x 6 rows) ----
+grid_cell(1,1). grid_cell(1,2). grid_cell(1,3). grid_cell(1,4). grid_cell(1,5). grid_cell(1,6).
+grid_cell(2,1). grid_cell(2,2). grid_cell(2,3). grid_cell(2,4). grid_cell(2,5). grid_cell(2,6).
+grid_cell(3,1). grid_cell(3,2). grid_cell(3,3). grid_cell(3,4). grid_cell(3,5). grid_cell(3,6).
+grid_cell(4,1). grid_cell(4,2). grid_cell(4,3). grid_cell(4,4). grid_cell(4,5). grid_cell(4,6).
+grid_cell(5,1). grid_cell(5,2). grid_cell(5,3). grid_cell(5,4). grid_cell(5,5). grid_cell(5,6).
+grid_cell(6,1). grid_cell(6,2). grid_cell(6,3). grid_cell(6,4). grid_cell(6,5). grid_cell(6,6).
+
+grid_max_x(6).
+grid_max_y(6).
+
+// ---- HIGHWAYS (row 1 is the main corridor) ----
+is_highway(1,1). is_highway(1,2). is_highway(1,3). is_highway(1,4). is_highway(1,5). is_highway(1,6).
+
+// ---- PICKING STATIONS ----
+is_picking_station(1,1).
+is_picking_station(1,6).
+
+// ---- ZONES ----
+zone(zone_A). zone(zone_B). zone(zone_C). zone(zone_D).
+
+zone_type(zone_A, ambient).
+zone_type(zone_B, ambient).
+zone_type(zone_C, freezer).
+zone_type(zone_D, hazmat).
+
+zone_humidity(zone_A, low).
+zone_humidity(zone_B, high).
+zone_humidity(zone_C, low).
+zone_humidity(zone_D, low).
+
+// ---- SHELVES with grid positions and zone assignments ----
+// Zone A shelves (rows 2-3, cols 1-3)
+shelf(shelf_A1). shelf_position(shelf_A1, 2, 2). shelf_in_zone(shelf_A1, zone_A).
+shelf(shelf_A2). shelf_position(shelf_A2, 2, 3). shelf_in_zone(shelf_A2, zone_A).
+shelf(shelf_A3). shelf_position(shelf_A3, 3, 2). shelf_in_zone(shelf_A3, zone_A).
+shelf(shelf_A4). shelf_position(shelf_A4, 3, 3). shelf_in_zone(shelf_A4, zone_A).
+
+// Zone B shelves (rows 2-3, cols 4-6)
+shelf(shelf_B1). shelf_position(shelf_B1, 2, 4). shelf_in_zone(shelf_B1, zone_B).
+shelf(shelf_B2). shelf_position(shelf_B2, 2, 5). shelf_in_zone(shelf_B2, zone_B).
+shelf(shelf_B3). shelf_position(shelf_B3, 3, 4). shelf_in_zone(shelf_B3, zone_B).
+shelf(shelf_B4). shelf_position(shelf_B4, 3, 5). shelf_in_zone(shelf_B4, zone_B).
+
+// Zone C shelves - freezer (rows 4-5, cols 1-3)
+shelf(shelf_C1). shelf_position(shelf_C1, 4, 2). shelf_in_zone(shelf_C1, zone_C).
+shelf(shelf_C2). shelf_position(shelf_C2, 4, 3). shelf_in_zone(shelf_C2, zone_C).
+shelf(shelf_C3). shelf_position(shelf_C3, 5, 2). shelf_in_zone(shelf_C3, zone_C).
+shelf(shelf_C4). shelf_position(shelf_C4, 5, 3). shelf_in_zone(shelf_C4, zone_C).
+
+// Zone D shelves - hazmat (rows 4-5, cols 4-6)
+shelf(shelf_D1). shelf_position(shelf_D1, 4, 4). shelf_in_zone(shelf_D1, zone_D).
+shelf(shelf_D2). shelf_position(shelf_D2, 4, 5). shelf_in_zone(shelf_D2, zone_D).
+shelf(shelf_D3). shelf_position(shelf_D3, 5, 4). shelf_in_zone(shelf_D3, zone_D).
+shelf(shelf_D4). shelf_position(shelf_D4, 5, 5). shelf_in_zone(shelf_D4, zone_D).
+
+shelf_level(shelf_A1, 3). shelf_level(shelf_A2, 3). shelf_level(shelf_A3, 2). shelf_level(shelf_A4, 2).
+shelf_level(shelf_B1, 4). shelf_level(shelf_B2, 4). shelf_level(shelf_B3, 1). shelf_level(shelf_B4, 1).
+shelf_level(shelf_C1, 2). shelf_level(shelf_C2, 2). shelf_level(shelf_C3, 3). shelf_level(shelf_C4, 3).
+shelf_level(shelf_D1, 1). shelf_level(shelf_D2, 1). shelf_level(shelf_D3, 6). shelf_level(shelf_D4, 7).
+
+// ---- ROBOTS (initial positions and state) ----
+robot(robot1). robot_position(robot1, 1, 2). robot_carries(robot1, none).
+robot(robot2). robot_position(robot2, 1, 5). robot_carries(robot2, none).
+
+// ---- PRODUCT PROPERTIES ----
+// (atom names match the ML facts file exactly)
+
+product_property(white_hanging_heart_tlight_holder, fragile).
+product_property(red_hanging_heart_tlight_holder, fragile).
+product_property(regency_cakestand_3_tier, heavy).
+product_property(regency_cakestand_3_tier, fragile).
+product_property(natural_slate_heart_chalkboard, heavy).
+product_property(assorted_colour_bird_ornament, fragile).
+product_property(heart_of_wicker_small, fragile).
+product_property(heart_of_wicker_large, fragile).
+product_property(jumbo_bag_red_retrospot, heavy).
+product_property(jumbo_bag_baroque_black_white, heavy).
+product_property(jumbo_bag_strawberry, heavy).
+product_property(jumbo_bag_apples, heavy).
+product_property(red_retrospot_charlotte_bag, fragile).
+product_property(party_bunting, paper_goods).
+product_property(spotty_bunting, paper_goods).
+product_property(tea_time_party_bunting, paper_goods).
+product_property(wooden_picture_frame_white_finish, fragile).
+product_property(recipe_box_pantry_yellow_design, paper_goods).
+product_property(lunch_bag_red_retrospot, fragile).
+product_property(lunch_bag_woodland, fragile).
+product_property(lunch_bag_black_skull, fragile).
+product_property(lunch_bag_cars_blue, fragile).
+product_property(lunch_bag_spaceboy_design, fragile).
+product_property(lunch_bag_pink_polkadot, fragile).
+product_property(set_of_3_cake_tins_pantry_design, fragile).
+product_property(set_of_6_spice_tins_pantry_design, fragile).
+product_property(green_regency_teacup_and_saucer, fragile).
+product_property(jam_making_set_with_jars, fragile).
+product_property(pack_of_72_retrospot_cake_cases, paper_goods).
+product_property(zinc_metal_heart_decoration, fragile).
+product_property(alarm_clock_bakelike_red, fragile).
+product_property(alarm_clock_bakelike_green, fragile).
+product_property(alarm_clock_bakelike_pink, fragile).
+product_property(victorian_glass_hanging_tlight, fragile).
+product_property(rabbit_night_light, electronic).
+product_property(set_of_4_pantry_jelly_moulds, fragile).
+product_property(roses_regency_teacup_and_saucer, fragile).
+product_property(set_of_6_herb_tins_sketchbook, fragile).
+
+// Frozen items (intentionally placed outside freezer to trigger spoilage alerts)
+product_property(ice_cream_sundae_lip_gloss, frozen).
+product_property(chocolate_hot_water_bottle, frozen).
+
+// Hazmat items
+product_property(jasmine_votive_candle, flammable).
+product_property(pink_pillar_candle_silver_flock, flammable).
+product_property(retrospot_candle_medium, flammable).
+product_property(set3_ocean_scent_candle_jewel_box, flammable).
+product_property(potting_shed_rose_candle, flammable).
+product_property(industrial_cleaner_concentrate, oxidizer).
+product_property(bleach_surface_cleaner, oxidizer).
+
+// ---- SHELF INVENTORY: shelf_stock(Shelf, Product, Quantity) ----
+
+// Zone A - general home decor
+shelf_stock(shelf_A1, white_hanging_heart_tlight_holder, 10).
+shelf_stock(shelf_A1, red_hanging_heart_tlight_holder, 8).
+shelf_stock(shelf_A1, victorian_glass_hanging_tlight, 6).
+
+shelf_stock(shelf_A2, regency_cakestand_3_tier, 5).
+shelf_stock(shelf_A2, natural_slate_heart_chalkboard, 7).
+shelf_stock(shelf_A2, heart_of_wicker_small, 12).
+
+shelf_stock(shelf_A3, assorted_colour_bird_ornament, 15).
+shelf_stock(shelf_A3, zinc_metal_heart_decoration, 10).
+shelf_stock(shelf_A3, wooden_picture_frame_white_finish, 8).
+
+shelf_stock(shelf_A4, heart_of_wicker_large, 6).
+shelf_stock(shelf_A4, alarm_clock_bakelike_red, 4).
+shelf_stock(shelf_A4, alarm_clock_bakelike_green, 4).
+shelf_stock(shelf_A4, alarm_clock_bakelike_pink, 3).
+
+// Zone B - bags, bunting, paper goods (high humidity zone - triggers paper damage alerts)
+shelf_stock(shelf_B1, jumbo_bag_red_retrospot, 20).
+shelf_stock(shelf_B1, jumbo_bag_baroque_black_white, 15).
+shelf_stock(shelf_B1, jumbo_bag_strawberry, 12).
+
+shelf_stock(shelf_B2, party_bunting, 18).
+shelf_stock(shelf_B2, spotty_bunting, 14).
+shelf_stock(shelf_B2, tea_time_party_bunting, 10).
+
+shelf_stock(shelf_B3, recipe_box_pantry_yellow_design, 9).
+shelf_stock(shelf_B3, pack_of_72_retrospot_cake_cases, 25).
+shelf_stock(shelf_B3, set_of_3_cake_tins_pantry_design, 7).
+
+shelf_stock(shelf_B4, red_retrospot_charlotte_bag, 11).
+shelf_stock(shelf_B4, jumbo_bag_apples, 8).
+shelf_stock(shelf_B4, lunch_bag_pink_polkadot, 6).
+
+// Zone C - freezer zone
+shelf_stock(shelf_C1, ice_cream_sundae_lip_gloss, 20).
+shelf_stock(shelf_C1, chocolate_hot_water_bottle, 15).
+
+shelf_stock(shelf_C2, set_of_6_spice_tins_pantry_design, 10).
+shelf_stock(shelf_C2, green_regency_teacup_and_saucer, 8).
+
+shelf_stock(shelf_C3, jam_making_set_with_jars, 6).
+shelf_stock(shelf_C3, set_of_4_pantry_jelly_moulds, 12).
+shelf_stock(shelf_C3, roses_regency_teacup_and_saucer, 7).
+
+shelf_stock(shelf_C4, rabbit_night_light, 9).
+shelf_stock(shelf_C4, set_of_6_herb_tins_sketchbook, 5).
+
+// Zone D - hazmat / candles / chemicals
+shelf_stock(shelf_D1, jasmine_votive_candle, 20).
+shelf_stock(shelf_D1, pink_pillar_candle_silver_flock, 15).
+
+shelf_stock(shelf_D2, retrospot_candle_medium, 18).
+shelf_stock(shelf_D2, set3_ocean_scent_candle_jewel_box, 10).
+shelf_stock(shelf_D2, potting_shed_rose_candle, 12).
+
+shelf_stock(shelf_D3, industrial_cleaner_concentrate, 30).
+shelf_stock(shelf_D3, bleach_surface_cleaner, 25).
+
+// Deliberately misplaced items for violation detection:
+// Lunch bags in zone A (far from their co-purchased items in zone B)
+shelf_stock(shelf_A4, lunch_bag_red_retrospot, 5).
+shelf_stock(shelf_A4, lunch_bag_woodland, 4).
+shelf_stock(shelf_A4, lunch_bag_cars_blue, 3).
+
+// Frozen item outside freezer (zone B instead of zone C)
+shelf_stock(shelf_B4, ice_cream_sundae_lip_gloss, 3).
+
+// Flammable + oxidizer on same shelf in zone D (hazmat reaction trigger)
+shelf_stock(shelf_D3, potting_shed_rose_candle, 5).
+
+// Heavy item on high shelf (shelf_D4 has level 7)
+shelf_stock(shelf_D4, regency_cakestand_3_tier, 3).
+shelf_stock(shelf_D4, natural_slate_heart_chalkboard, 2).
+
+// ---- ORDERS ----
+order(order_1001).
+order_line(order_1001, white_hanging_heart_tlight_holder, 2).
+order_line(order_1001, red_hanging_heart_tlight_holder, 1).
+order_line(order_1001, heart_of_wicker_small, 3).
+
+order(order_1002).
+order_line(order_1002, jumbo_bag_red_retrospot, 1).
+order_line(order_1002, party_bunting, 2).
+order_line(order_1002, spotty_bunting, 1).
+order_line(order_1002, recipe_box_pantry_yellow_design, 1).
+
+order(order_1003).
+order_line(order_1003, regency_cakestand_3_tier, 1).
+order_line(order_1003, jam_making_set_with_jars, 1).
+order_line(order_1003, set_of_3_cake_tins_pantry_design, 2).
+order_line(order_1003, set_of_6_spice_tins_pantry_design, 1).
+
+order(order_1004).
+order_line(order_1004, lunch_bag_red_retrospot, 1).
+order_line(order_1004, lunch_bag_woodland, 1).
+order_line(order_1004, lunch_bag_cars_blue, 1).
+order_line(order_1004, red_retrospot_charlotte_bag, 1).
+
+// ---- INITIAL DELIVERY TRACKING ----
+// delivered(Order, Product, Qty) -- starts empty, built up during fulfillment
+// (no initial facts -- all zeros)
+
+
 // --- Auto-generated by Neural Network Predictor ---
 
 frequently_bought_together(white_hanging_heart_tlight_holder, red_hanging_heart_tlight_holder).
@@ -19995,3 +20232,740 @@ frequently_bought_together(letter_u_bling_key_ring, amber_chunky_bead_bracelet_w
 frequently_bought_together(letter_u_bling_key_ring, letter_o_bling_key_ring).
 frequently_bought_together(letter_u_bling_key_ring, diamante_necklace_green).
 frequently_bought_together(letter_u_bling_key_ring, green_heart_of_glass_bracelet).
+
+
+// ============================================================================
+// SMART WAREHOUSE OPTIMIZATION SYSTEM - ErgoAI
+// ML-Driven (Skip-Gram) + Robot Automation + Safety Constraints
+// ============================================================================
+//
+// This system integrates:
+//   1. ML predictions from a skip-gram neural network (frequently bought together)
+//   2. Full robot movement, pickup, putdown, and delivery actions
+//   3. Safety constraints: hazmat, spoilage, collision, highway blocking, etc.
+//   4. Race condition guards for concurrent robot operations
+//   5. Order fulfillment simulation with inventory tracking
+//
+// Load in ErgoAI Studio (this Ergo build does not support in-file include directives):
+//   1) ['C:/Users/Saket/OneDrive/Desktop/WarehouseProject/warehouse_data.ergo'].
+//   2) ['C:/Users/Saket/OneDrive/Desktop/WarehouseProject/ergo_facts_neural_network.ergo'].
+//   3) ['C:/Users/Saket/OneDrive/Desktop/WarehouseProject/warehouse_main.ergo'].
+// ============================================================================
+
+
+// =========================================================================
+// SECTION A: DATA LOADING
+// =========================================================================
+
+// NOTE: Dependency files are loaded from the listener before this file.
+// Some Ergo builds report "unknown compiler directive" for include/consult here.
+
+// Dependencies are loaded in the combined run file (warehouse_run.ergo)
+// to avoid module override behavior in this Ergo Listener configuration.
+
+
+// =========================================================================
+// SECTION B: ROBOT MOVEMENT ACTIONS
+// =========================================================================
+
+robot_at(?Robot, ?X, ?Y) :- robot_position(?Robot, ?X, ?Y).
+
+robot_is_loaded(?Robot) :-
+    robot(?Robot),
+    robot_carries(?Robot, ?Shelf),
+    ?Shelf \== none.
+
+robot_is_unloaded(?Robot) :-
+    robot(?Robot),
+    robot_carries(?Robot, none).
+
+target_cell(?Robot, ?DX, ?DY, ?NX, ?NY) :-
+    robot_position(?Robot, ?X, ?Y),
+    ?NX \is ?X + ?DX,
+    ?NY \is ?Y + ?DY.
+
+within_grid(?X, ?Y) :- grid_cell(?X, ?Y).
+
+// CONSTRAINT: robot cannot move outside grid
+move_blocked(grid_boundary, ?Robot, ?DX, ?DY) :-
+    robot(?Robot),
+    target_cell(?Robot, ?DX, ?DY, ?NX, ?NY),
+    \naf within_grid(?NX, ?NY).
+
+// CONSTRAINT: collision with another robot at target cell
+move_blocked(robot_collision, ?Robot, ?DX, ?DY) :-
+    robot(?Robot),
+    target_cell(?Robot, ?DX, ?DY, ?NX, ?NY),
+    robot_position(?Other, ?NX, ?NY),
+    ?Other \== ?Robot.
+
+// CONSTRAINT: position swap - two robots exchange positions simultaneously
+move_blocked(position_swap, ?Robot, ?DX, ?DY) :-
+    robot(?Robot),
+    robot_position(?Robot, ?X, ?Y),
+    target_cell(?Robot, ?DX, ?DY, ?NX, ?NY),
+    robot_position(?Other, ?NX, ?NY),
+    ?Other \== ?Robot,
+    target_cell(?Other, ?_DX2, ?_DY2, ?X, ?Y).
+
+// CONSTRAINT: loaded robot cannot move under a stationary shelf
+move_blocked(loaded_under_shelf, ?Robot, ?DX, ?DY) :-
+    robot_is_loaded(?Robot),
+    target_cell(?Robot, ?DX, ?DY, ?NX, ?NY),
+    shelf_position(?OtherShelf, ?NX, ?NY),
+    robot_carries(?Robot, ?CarriedShelf),
+    ?OtherShelf \== ?CarriedShelf.
+
+// CONSTRAINT: unloaded robot cannot enter picking station
+move_blocked(unloaded_at_picking, ?Robot, ?DX, ?DY) :-
+    robot_is_unloaded(?Robot),
+    target_cell(?Robot, ?DX, ?DY, ?NX, ?NY),
+    is_picking_station(?NX, ?NY).
+
+// Move is valid when no block reason exists
+can_move(?Robot, ?DX, ?DY) :-
+    robot(?Robot),
+    target_cell(?Robot, ?DX, ?DY, ?NX, ?NY),
+    within_grid(?NX, ?NY),
+    \naf move_blocked(?_Reason, ?Robot, ?DX, ?DY).
+
+// Execute move with transactional state update
+%move(?Robot, ?DX, ?DY) :-
+    can_move(?Robot, ?DX, ?DY),
+    robot_position(?Robot, ?OldX, ?OldY),
+    target_cell(?Robot, ?DX, ?DY, ?NX, ?NY),
+    delete{robot_position(?Robot, ?OldX, ?OldY)},
+    insert{robot_position(?Robot, ?NX, ?NY)},
+    \if (robot_carries(?Robot, ?Shelf), ?Shelf \== none)
+    \then (
+        shelf_position(?Shelf, ?ShX, ?ShY),
+        delete{shelf_position(?Shelf, ?ShX, ?ShY)},
+        insert{shelf_position(?Shelf, ?NX, ?NY)}
+    ),
+    fmt_write('ACTION: Robot %S moved from (%S,%S) to (%S,%S)\n',
+              args(?Robot, ?OldX, ?OldY, ?NX, ?NY))@\io.
+
+// Attempt move; print block reason if denied
+%try_move(?Robot, ?DX, ?DY) :-
+    \if can_move(?Robot, ?DX, ?DY)
+    \then %move(?Robot, ?DX, ?DY)
+    \else (
+        move_blocked(?Reason, ?Robot, ?DX, ?DY),
+        fmt_write('BLOCKED: Robot %S move (%S,%S) denied - %S\n',
+                  args(?Robot, ?DX, ?DY, ?Reason))@\io
+    ).
+
+
+// =========================================================================
+// SECTION C: PICKUP AND PUTDOWN ACTIONS
+// =========================================================================
+
+// PRECONDITION: robot at shelf location, not already carrying
+can_pickup(?Robot, ?Shelf) :-
+    robot(?Robot),
+    shelf(?Shelf),
+    robot_position(?Robot, ?X, ?Y),
+    shelf_position(?Shelf, ?X, ?Y),
+    robot_carries(?Robot, none).
+
+pickup_blocked(already_carrying, ?Robot, ?Shelf) :-
+    robot(?Robot),
+    shelf(?Shelf),
+    robot_is_loaded(?Robot).
+
+pickup_blocked(not_at_shelf, ?Robot, ?Shelf) :-
+    robot(?Robot),
+    shelf(?Shelf),
+    robot_position(?Robot, ?RX, ?RY),
+    shelf_position(?Shelf, ?SX, ?SY),
+    (?RX \== ?SX ; ?RY \== ?SY).
+
+%pickup(?Robot, ?Shelf) :-
+    can_pickup(?Robot, ?Shelf),
+    delete{robot_carries(?Robot, none)},
+    insert{robot_carries(?Robot, ?Shelf)},
+    fmt_write('ACTION: Robot %S picked up %S\n', args(?Robot, ?Shelf))@\io.
+
+%try_pickup(?Robot, ?Shelf) :-
+    \if can_pickup(?Robot, ?Shelf)
+    \then %pickup(?Robot, ?Shelf)
+    \else (
+        pickup_blocked(?Reason, ?Robot, ?Shelf),
+        fmt_write('BLOCKED: Robot %S pickup of %S denied - %S\n',
+                  args(?Robot, ?Shelf, ?Reason))@\io
+    ).
+
+// PRECONDITION: robot carrying shelf, not on highway, no other shelf at location
+can_putdown(?Robot, ?Shelf) :-
+    robot(?Robot),
+    shelf(?Shelf),
+    robot_carries(?Robot, ?Shelf),
+    robot_position(?Robot, ?X, ?Y),
+    \naf is_highway(?X, ?Y),
+    \naf other_shelf_at(?Shelf, ?X, ?Y).
+
+other_shelf_at(?Shelf, ?X, ?Y) :-
+    shelf_position(?OtherShelf, ?X, ?Y),
+    ?OtherShelf \== ?Shelf.
+
+putdown_blocked(not_carrying, ?Robot, ?Shelf) :-
+    robot(?Robot),
+    shelf(?Shelf),
+    robot_carries(?Robot, ?Carried),
+    ?Carried \== ?Shelf.
+
+putdown_blocked(on_highway, ?Robot, ?Shelf) :-
+    robot(?Robot),
+    shelf(?Shelf),
+    robot_carries(?Robot, ?Shelf),
+    robot_position(?Robot, ?X, ?Y),
+    is_highway(?X, ?Y).
+
+putdown_blocked(shelf_occupied, ?Robot, ?Shelf) :-
+    robot(?Robot),
+    shelf(?Shelf),
+    robot_carries(?Robot, ?Shelf),
+    robot_position(?Robot, ?X, ?Y),
+    other_shelf_at(?Shelf, ?X, ?Y).
+
+%putdown(?Robot, ?Shelf) :-
+    can_putdown(?Robot, ?Shelf),
+    delete{robot_carries(?Robot, ?Shelf)},
+    insert{robot_carries(?Robot, none)},
+    fmt_write('ACTION: Robot %S put down %S\n', args(?Robot, ?Shelf))@\io.
+
+%try_putdown(?Robot, ?Shelf) :-
+    \if can_putdown(?Robot, ?Shelf)
+    \then %putdown(?Robot, ?Shelf)
+    \else (
+        putdown_blocked(?Reason, ?Robot, ?Shelf),
+        fmt_write('BLOCKED: Robot %S putdown of %S denied - %S\n',
+                  args(?Robot, ?Shelf, ?Reason))@\io
+    ).
+
+
+// =========================================================================
+// SECTION D: DELIVER ACTION
+// =========================================================================
+
+// How much of a product is still needed for an order
+remaining_need(?Order, ?Product, ?Need) :-
+    order_line(?Order, ?Product, ?Ordered),
+    \if delivered(?Order, ?Product, ?Del)
+    \then ?Need \is ?Ordered - ?Del
+    \else ?Need \is ?Ordered,
+    ?Need > 0.
+
+// PRECONDITION: robot at picking station, carrying shelf with product, order needs it
+can_deliver(?Robot, ?Product, ?Qty, ?Order) :-
+    robot(?Robot),
+    order(?Order),
+    robot_position(?Robot, ?X, ?Y),
+    is_picking_station(?X, ?Y),
+    robot_carries(?Robot, ?Shelf),
+    ?Shelf \== none,
+    shelf_stock(?Shelf, ?Product, ?Available),
+    ?Available >= ?Qty,
+    ?Qty > 0,
+    remaining_need(?Order, ?Product, ?Need),
+    ?Need >= ?Qty.
+
+deliver_blocked(not_at_picking_station, ?Robot, ?_Product, ?_Qty, ?Order) :-
+    robot(?Robot),
+    order(?Order),
+    robot_position(?Robot, ?X, ?Y),
+    \naf is_picking_station(?X, ?Y).
+
+deliver_blocked(not_carrying_shelf, ?Robot, ?_Product, ?_Qty, ?Order) :-
+    robot(?Robot),
+    order(?Order),
+    robot_carries(?Robot, none).
+
+deliver_blocked(product_not_on_shelf, ?Robot, ?Product, ?_Qty, ?Order) :-
+    robot(?Robot),
+    order(?Order),
+    robot_carries(?Robot, ?Shelf),
+    ?Shelf \== none,
+    \naf shelf_stock(?Shelf, ?Product, ?_Q).
+
+deliver_blocked(insufficient_stock, ?Robot, ?Product, ?Qty, ?Order) :-
+    robot(?Robot),
+    order(?Order),
+    robot_carries(?Robot, ?Shelf),
+    ?Shelf \== none,
+    shelf_stock(?Shelf, ?Product, ?Available),
+    ?Available < ?Qty.
+
+deliver_blocked(exceeds_order_need, ?Robot, ?Product, ?Qty, ?Order) :-
+    robot(?Robot),
+    order(?Order),
+    remaining_need(?Order, ?Product, ?Need),
+    ?Qty > ?Need.
+
+deliver_blocked(wrong_product, ?Robot, ?Product, ?_Qty, ?Order) :-
+    robot(?Robot),
+    order(?Order),
+    \naf order_line(?Order, ?Product, ?_Q).
+
+// Execute delivery: decrement stock, increment delivered count
+%deliver(?Robot, ?Product, ?Qty, ?Order) :-
+    can_deliver(?Robot, ?Product, ?Qty, ?Order),
+    robot_carries(?Robot, ?Shelf),
+    shelf_stock(?Shelf, ?Product, ?OldStock),
+    ?NewStock \is ?OldStock - ?Qty,
+    delete{shelf_stock(?Shelf, ?Product, ?OldStock)},
+    insert{shelf_stock(?Shelf, ?Product, ?NewStock)},
+    \if delivered(?Order, ?Product, ?OldDel)
+    \then (
+        ?NewDel \is ?OldDel + ?Qty,
+        delete{delivered(?Order, ?Product, ?OldDel)},
+        insert{delivered(?Order, ?Product, ?NewDel)}
+    )
+    \else insert{delivered(?Order, ?Product, ?Qty)},
+    fmt_write('ACTION: Robot %S delivered %S x%S for %S from %S\n',
+              args(?Robot, ?Product, ?Qty, ?Order, ?Shelf))@\io.
+
+%try_deliver(?Robot, ?Product, ?Qty, ?Order) :-
+    \if can_deliver(?Robot, ?Product, ?Qty, ?Order)
+    \then %deliver(?Robot, ?Product, ?Qty, ?Order)
+    \else (
+        deliver_blocked(?Reason, ?Robot, ?Product, ?Qty, ?Order),
+        fmt_write('BLOCKED: Delivery of %S x%S for %S denied - %S\n',
+                  args(?Product, ?Qty, ?Order, ?Reason))@\io
+    ).
+
+
+// =========================================================================
+// SECTION E: STATE CONSTRAINTS (always-on invariants)
+// =========================================================================
+
+// No shelf on highway
+state_violation(shelf_on_highway, ?Shelf, ?X, ?Y) :-
+    shelf(?Shelf),
+    shelf_position(?Shelf, ?X, ?Y),
+    is_highway(?X, ?Y).
+
+// No two robots at the same cell
+state_violation(robot_collision, ?R1, ?R2, ?X, ?Y) :-
+    robot(?R1),
+    robot(?R2),
+    ?R1 @< ?R2,
+    robot_position(?R1, ?X, ?Y),
+    robot_position(?R2, ?X, ?Y).
+
+// No two shelves at the same cell
+state_violation(shelf_collision, ?S1, ?S2, ?X, ?Y) :-
+    shelf(?S1),
+    shelf(?S2),
+    ?S1 @< ?S2,
+    shelf_position(?S1, ?X, ?Y),
+    shelf_position(?S2, ?X, ?Y).
+
+// Race condition guard: robot must not be mid-action
+state_violation(race_condition, ?Robot) :-
+    robot(?Robot),
+    robot_in_transit(?Robot).
+
+// Shelf tracks robot when carried
+shelf_follows_robot(?Robot, ?Shelf, ?X, ?Y) :-
+    robot_carries(?Robot, ?Shelf),
+    ?Shelf \== none,
+    robot_position(?Robot, ?X, ?Y).
+
+
+// =========================================================================
+// SECTION F: SAFETY ALERT RULES
+// =========================================================================
+
+// 1. HAZMAT REACTION - oxidizer and flammable on same shelf
+alert(hazmat_reaction, ?Item1, ?Item2, ?Shelf) :-
+    product_property(?Item1, oxidizer),
+    product_property(?Item2, flammable),
+    shelf_stock(?Shelf, ?Item1, ?Q1), ?Q1 > 0,
+    shelf_stock(?Shelf, ?Item2, ?Q2), ?Q2 > 0,
+    ?Item1 @< ?Item2.
+
+// 2. SPOILAGE - frozen item not in freezer zone
+alert(spoilage_risk, ?Item, ?Shelf, ?Zone) :-
+    product_property(?Item, frozen),
+    shelf_stock(?Shelf, ?Item, ?Q), ?Q > 0,
+    shelf_in_zone(?Shelf, ?Zone),
+    zone_type(?Zone, ?ZType),
+    ?ZType \== freezer.
+
+// 3. HEAVY ITEM TOO HIGH - heavy product on shelf level > 5
+alert(heavy_fall_risk, ?Item, ?Shelf, ?Level) :-
+    product_property(?Item, heavy),
+    shelf_stock(?Shelf, ?Item, ?Q), ?Q > 0,
+    shelf_level(?Shelf, ?Level),
+    ?Level > 5.
+
+// 4. HUMIDITY DAMAGE - paper goods in high humidity zone
+alert(humidity_damage, ?Item, ?Shelf, ?Zone) :-
+    product_property(?Item, paper_goods),
+    shelf_stock(?Shelf, ?Item, ?Q), ?Q > 0,
+    shelf_in_zone(?Shelf, ?Zone),
+    zone_humidity(?Zone, high).
+
+// 5. ROBOT COLLISION - two robots at same cell
+alert(robot_collision, ?R1, ?R2, loc(?X,?Y)) :-
+    state_violation(robot_collision, ?R1, ?R2, ?X, ?Y).
+
+// 6. HIGHWAY BLOCKAGE - shelf on highway
+alert(highway_block, ?Shelf, ?X, ?Y) :-
+    state_violation(shelf_on_highway, ?Shelf, ?X, ?Y).
+
+// 7. PROTOCOL ERROR - unloaded robot at picking station
+alert(protocol_error, ?Robot, ?X, ?Y) :-
+    robot(?Robot),
+    robot_is_unloaded(?Robot),
+    robot_position(?Robot, ?X, ?Y),
+    is_picking_station(?X, ?Y).
+
+// 8. UNSAFE MOVEMENT - loaded robot under another shelf
+alert(unsafe_movement, ?Robot, ?OtherShelf, loc(?X,?Y)) :-
+    robot(?Robot),
+    robot_is_loaded(?Robot),
+    robot_position(?Robot, ?X, ?Y),
+    robot_carries(?Robot, ?Carried),
+    shelf_position(?OtherShelf, ?X, ?Y),
+    ?OtherShelf \== ?Carried.
+
+// 9. FRAGILE item on high shelf
+alert(fragile_risk, ?Item, ?Shelf, ?Level) :-
+    product_property(?Item, fragile),
+    shelf_stock(?Shelf, ?Item, ?Q), ?Q > 0,
+    shelf_level(?Shelf, ?Level),
+    ?Level > 5.
+
+// 10. ELECTRONIC item in freezer zone
+alert(electronic_in_freezer, ?Item, ?Shelf, ?Zone) :-
+    product_property(?Item, electronic),
+    shelf_stock(?Shelf, ?Item, ?Q), ?Q > 0,
+    shelf_in_zone(?Shelf, ?Zone),
+    zone_type(?Zone, freezer).
+
+
+// =========================================================================
+// SECTION G: ML-DRIVEN WAREHOUSE OPTIMIZATION
+// =========================================================================
+
+// Helper: which zone an item is stored in
+item_in_zone(?Item, ?Zone) :-
+    shelf_stock(?Shelf, ?Item, ?Q), ?Q > 0,
+    shelf_in_zone(?Shelf, ?Zone).
+
+// Helper: which shelf an item is on
+item_on_shelf(?Item, ?Shelf) :-
+    shelf_stock(?Shelf, ?Item, ?Q), ?Q > 0.
+
+// 1. ML CO-LOCATION ALERT: frequently bought together items in different zones
+ml_colocation_alert(?Item1, ?Zone1, ?Item2, ?Zone2) :-
+    frequently_bought_together(?Item1, ?Item2),
+    item_in_zone(?Item1, ?Zone1),
+    item_in_zone(?Item2, ?Zone2),
+    ?Zone1 \== ?Zone2.
+
+// 2. ML RECOMMENDATION: move item closer to co-purchased items
+ml_recommend_move(?Item, ?CurrentZone, ?BetterZone) :-
+    item_in_zone(?Item, ?CurrentZone),
+    zone(?BetterZone),
+    ?BetterZone \== ?CurrentZone,
+    ml_partner_count_in_zone(?Item, ?BetterZone, ?BetterCount),
+    ml_partner_count_in_zone(?Item, ?CurrentZone, ?CurrentCount),
+    ?BetterCount > ?CurrentCount.
+
+ml_partner_count_in_zone(?Item, ?Zone, ?Count) :-
+    ?Count = count{?Partner |
+        frequently_bought_together(?Item, ?Partner),
+        item_in_zone(?Partner, ?Zone)
+    },
+    ?Count > 0.
+
+// 3. OPTIMAL ZONE: zone with most co-purchase partners for an item
+optimal_zone_for(?Item, ?BestZone, ?MaxCount) :-
+    item_in_zone(?Item, ?_AnyZone),
+    ?MaxCount = max{?C |
+        ml_partner_count_in_zone(?Item, ?_Z, ?C)
+    },
+    ml_partner_count_in_zone(?Item, ?BestZone, ?MaxCount).
+
+// 4. PICKING EFFICIENCY: distinct zones an order must visit
+order_zone_count(?Order, ?ZoneCount) :-
+    order(?Order),
+    ?ZoneCount = count{?Zone |
+        order_line(?Order, ?Product, ?_Qty),
+        item_in_zone(?Product, ?Zone)
+    }.
+
+// 5. ML DISTANCE ALERT: co-purchased items on distant shelves (Manhattan dist > 4)
+ml_distance_alert(?Item1, ?Item2, ?Dist) :-
+    frequently_bought_together(?Item1, ?Item2),
+    item_on_shelf(?Item1, ?S1),
+    item_on_shelf(?Item2, ?S2),
+    shelf_position(?S1, ?X1, ?Y1),
+    shelf_position(?S2, ?X2, ?Y2),
+    ?DX \is abs(?X1 - ?X2),
+    ?DY \is abs(?Y1 - ?Y2),
+    ?Dist \is ?DX + ?DY,
+    ?Dist > 4.
+
+
+// =========================================================================
+// SECTION H: ORDER FULFILLMENT SIMULATION
+// =========================================================================
+
+// Order status tracking
+order_status(?Order, fulfilled) :-
+    order(?Order),
+    \naf has_remaining_need(?Order).
+
+order_status(?Order, in_progress) :-
+    order(?Order),
+    has_remaining_need(?Order),
+    has_some_delivery(?Order).
+
+order_status(?Order, pending) :-
+    order(?Order),
+    has_remaining_need(?Order),
+    \naf has_some_delivery(?Order).
+
+has_remaining_need(?Order) :-
+    remaining_need(?Order, ?_P, ?Need),
+    ?Need > 0.
+
+has_some_delivery(?Order) :-
+    delivered(?Order, ?_P, ?Qty),
+    ?Qty > 0.
+
+// Find shelf with product needed by order
+shelf_for_order_product(?Order, ?Product, ?Shelf, ?Available) :-
+    remaining_need(?Order, ?Product, ?_Need),
+    shelf_stock(?Shelf, ?Product, ?Available),
+    ?Available > 0.
+
+// Navigate robot one step toward target using Manhattan movement
+%move_toward(?Robot, ?TX, ?TY) :-
+    robot_position(?Robot, ?CX, ?CY),
+    \if (?CX \== ?TX)
+    \then (
+        \if (?CX < ?TX) \then ?DX = 1 \else ?DX = -1,
+        %try_move(?Robot, ?DX, 0)
+    )
+    \else (
+        \if (?CY \== ?TY)
+        \then (
+            \if (?CY < ?TY) \then ?DY = 1 \else ?DY = -1,
+            %try_move(?Robot, 0, ?DY)
+        )
+        \else fmt_write('NAV: Robot %S already at (%S,%S)\n', args(?Robot, ?TX, ?TY))@\io
+    ).
+
+// Navigate robot fully to target (recursive)
+%navigate_to(?Robot, ?TX, ?TY) :-
+    robot_position(?Robot, ?TX, ?TY),
+    !.
+%navigate_to(?Robot, ?TX, ?TY) :-
+    %move_toward(?Robot, ?TX, ?TY),
+    %navigate_to(?Robot, ?TX, ?TY).
+
+// Fulfill a single order line: locate shelf, navigate, pickup, deliver, return shelf
+%fulfill_line(?Robot, ?Order, ?Product, ?Qty) :-
+    fmt_write('\n--- Fulfilling: %S x%S for %S ---\n', args(?Product, ?Qty, ?Order))@\io,
+    shelf_for_order_product(?Order, ?Product, ?Shelf, ?_Available),
+    shelf_position(?Shelf, ?SX, ?SY),
+    shelf_in_zone(?Shelf, ?Zone),
+    fmt_write('  Source: %S at (%S,%S) in %S\n', args(?Shelf, ?SX, ?SY, ?Zone))@\io,
+    %navigate_to(?Robot, ?SX, ?SY),
+    %try_pickup(?Robot, ?Shelf),
+    %navigate_to(?Robot, 1, 1),
+    %try_deliver(?Robot, ?Product, ?Qty, ?Order),
+    %navigate_to(?Robot, ?SX, ?SY),
+    %try_putdown(?Robot, ?Shelf),
+    fmt_write('  Line complete: %S x%S\n', args(?Product, ?Qty))@\io.
+
+// Fulfill an entire order
+%fulfill_order(?Order) :-
+    order(?Order),
+    fmt_write('%S', args('\n========================================\n'))@\io,
+    fmt_write('FULFILLING ORDER: %S\n', args(?Order))@\io,
+    fmt_write('%S', args('========================================\n'))@\io,
+    \while order_line(?Order, ?Product, ?_Qty)
+    \do (
+        \if remaining_need(?Order, ?Product, ?ActualNeed)
+        \then %fulfill_line(robot1, ?Order, ?Product, ?ActualNeed)
+        \else fmt_write('  Already fulfilled: %S\n', args(?Product))@\io
+    ),
+    fmt_write('ORDER %S COMPLETE\n', args(?Order))@\io,
+    order_status(?Order, ?Status),
+    fmt_write('STATUS: %S\n', args(?Status))@\io.
+
+
+// =========================================================================
+// SECTION I: REPORT GENERATION
+// =========================================================================
+
+// --- Safety Report ---
+%safety_report :-
+    fmt_write('%S', args('\n====================================================\n'))@\io,
+    fmt_write('%S', args('          WAREHOUSE SAFETY REPORT\n'))@\io,
+    fmt_write('%S', args('====================================================\n\n'))@\io,
+
+    fmt_write('%S', args('[HAZMAT REACTIONS]\n'))@\io,
+    \while alert(hazmat_reaction, ?I1, ?I2, ?S)
+    \do fmt_write('  CRITICAL: %S + %S on %S\n', args(?I1, ?I2, ?S))@\io,
+
+    fmt_write('%S', args('\n[SPOILAGE RISKS]\n'))@\io,
+    \while alert(spoilage_risk, ?I, ?S, ?Z)
+    \do fmt_write('  WARNING: Frozen item %S on %S in non-freezer %S\n', args(?I, ?S, ?Z))@\io,
+
+    fmt_write('%S', args('\n[HEAVY FALL RISKS]\n'))@\io,
+    \while alert(heavy_fall_risk, ?I3, ?S3, ?L)
+    \do fmt_write('  WARNING: Heavy item %S on %S at level %S\n', args(?I3, ?S3, ?L))@\io,
+
+    fmt_write('%S', args('\n[HUMIDITY DAMAGE RISKS]\n'))@\io,
+    \while alert(humidity_damage, ?I4, ?S4, ?Z4)
+    \do fmt_write('  WARNING: Paper item %S on %S in humid %S\n', args(?I4, ?S4, ?Z4))@\io,
+
+    fmt_write('%S', args('\n[FRAGILE RISKS]\n'))@\io,
+    \while alert(fragile_risk, ?I5, ?S5, ?L5)
+    \do fmt_write('  CAUTION: Fragile item %S on %S at level %S\n', args(?I5, ?S5, ?L5))@\io,
+
+    fmt_write('%S', args('\n[ELECTRONIC IN FREEZER]\n'))@\io,
+    \while alert(electronic_in_freezer, ?I6, ?S6, ?Z6)
+    \do fmt_write('  WARNING: Electronic %S on %S in %S\n', args(?I6, ?S6, ?Z6))@\io,
+
+    fmt_write('%S', args('\n[ROBOT COLLISIONS]\n'))@\io,
+    \while alert(robot_collision, ?R1, ?R2, ?Loc)
+    \do fmt_write('  CRITICAL: %S and %S at %S\n', args(?R1, ?R2, ?Loc))@\io,
+
+    fmt_write('%S', args('\n[HIGHWAY BLOCKAGES]\n'))@\io,
+    \while alert(highway_block, ?Sh, ?Xh, ?Yh)
+    \do fmt_write('  CRITICAL: %S blocking highway at (%S,%S)\n', args(?Sh, ?Xh, ?Yh))@\io,
+
+    fmt_write('%S', args('\n[PROTOCOL ERRORS]\n'))@\io,
+    \while alert(protocol_error, ?Rp, ?Xp, ?Yp)
+    \do fmt_write('  ERROR: Unloaded %S at picking station (%S,%S)\n', args(?Rp, ?Xp, ?Yp))@\io,
+
+    fmt_write('%S', args('\n====================================================\n'))@\io.
+
+
+// --- ML Optimization Report ---
+%ml_report :-
+    fmt_write('%S', args('\n====================================================\n'))@\io,
+    fmt_write('%S', args('       ML-DRIVEN OPTIMIZATION REPORT\n'))@\io,
+    fmt_write('%S', args('====================================================\n\n'))@\io,
+
+    fmt_write('%S', args('[CO-LOCATION ALERTS]\n'))@\io,
+    \while ml_colocation_alert(?Mc1, ?Mz1, ?Mc2, ?Mz2)
+    \do fmt_write('  %S (%S) <-> %S (%S)\n', args(?Mc1, ?Mz1, ?Mc2, ?Mz2))@\io,
+
+    fmt_write('%S', args('\n[MOVE RECOMMENDATIONS]\n'))@\io,
+    \while ml_recommend_move(?Mi, ?Mcz, ?Mbz)
+    \do fmt_write('  SUGGEST: Move %S from %S to %S\n', args(?Mi, ?Mcz, ?Mbz))@\io,
+
+    fmt_write('%S', args('\n[ORDER PICKING EFFICIENCY]\n'))@\io,
+    \while order_zone_count(?Eo, ?Ezc)
+    \do fmt_write('  %S requires visiting %S zone(s)\n', args(?Eo, ?Ezc))@\io,
+
+    fmt_write('%S', args('\n====================================================\n'))@\io.
+
+
+// --- Order Status Report ---
+%order_report :-
+    fmt_write('%S', args('\n====================================================\n'))@\io,
+    fmt_write('%S', args('            ORDER STATUS REPORT\n'))@\io,
+    fmt_write('%S', args('====================================================\n\n'))@\io,
+
+    \while order(?O)
+    \do (
+        order_status(?O, ?Status),
+        fmt_write('Order %S: %S\n', args(?O, ?Status))@\io,
+        \while order_line(?O, ?P, ?Qty)
+        \do (
+            \if remaining_need(?O, ?P, ?Rem)
+            \then (
+                ?Done \is ?Qty - ?Rem,
+                fmt_write('  %S: ordered=%S delivered=%S remaining=%S\n',
+                          args(?P, ?Qty, ?Done, ?Rem))@\io
+            )
+            \else fmt_write('  %S: ordered=%S delivered=%S remaining=0\n',
+                          args(?P, ?Qty, ?Qty))@\io
+        ),
+        fmt_write('%S', args('\n'))@\io
+    ),
+    fmt_write('%S', args('====================================================\n'))@\io.
+
+
+// --- Inventory Report ---
+%inventory_report :-
+    fmt_write('%S', args('\n====================================================\n'))@\io,
+    fmt_write('%S', args('           WAREHOUSE INVENTORY REPORT\n'))@\io,
+    fmt_write('%S', args('====================================================\n\n'))@\io,
+
+    \while shelf(?S)
+    \do (
+        shelf_in_zone(?S, ?Z),
+        shelf_position(?S, ?X, ?Y),
+        fmt_write('%S at (%S,%S) in %S:\n', args(?S, ?X, ?Y, ?Z))@\io,
+        \while shelf_stock(?S, ?P, ?Q)
+        \do fmt_write('  %S  qty=%S\n', args(?P, ?Q))@\io,
+        fmt_write('%S', args('\n'))@\io
+    ),
+    fmt_write('%S', args('====================================================\n'))@\io.
+
+
+// --- Full Warehouse Report ---
+%full_report :-
+    %safety_report,
+    %ml_report,
+    %order_report,
+    %inventory_report.
+
+
+// --- Robot Status Report ---
+%robot_report :-
+    fmt_write('%S', args('\n====================================================\n'))@\io,
+    fmt_write('%S', args('             ROBOT STATUS REPORT\n'))@\io,
+    fmt_write('%S', args('====================================================\n\n'))@\io,
+    \while robot(?R)
+    \do (
+        robot_position(?R, ?X, ?Y),
+        robot_carries(?R, ?C),
+        fmt_write('  %S at (%S,%S) carrying: %S\n', args(?R, ?X, ?Y, ?C))@\io
+    ),
+    fmt_write('%S', args('\n====================================================\n'))@\io.
+
+
+// =========================================================================
+// SECTION J: EMBEDDED QUERIES (auto-run on load)
+// =========================================================================
+
+?- fmt_write('%S', args('\n\n'))@\io.
+?- fmt_write('%S', args('============================================================\n'))@\io.
+?- fmt_write('%S', args('  SMART WAREHOUSE OPTIMIZATION SYSTEM - ErgoAI\n'))@\io.
+?- fmt_write('%S', args('  ML-Driven Skip-Gram + Robot Automation + Safety\n'))@\io.
+?- fmt_write('%S', args('============================================================\n\n'))@\io.
+?- fmt_write('%S', args('System loaded successfully.\n'))@\io.
+?- fmt_write('%S', args('Available commands:\n'))@\io.
+?- fmt_write('%S', args('  %safety_report     - Show all safety violations\n'))@\io.
+?- fmt_write('%S', args('  %ml_report         - Show ML optimization recommendations\n'))@\io.
+?- fmt_write('%S', args('  %order_report      - Show order statuses\n'))@\io.
+?- fmt_write('%S', args('  %inventory_report  - Show shelf inventory\n'))@\io.
+?- fmt_write('%S', args('  %robot_report      - Show robot positions\n'))@\io.
+?- fmt_write('%S', args('  %full_report       - Run all reports\n'))@\io.
+?- fmt_write('%S', args('  %fulfill_order(order_1001)  - Fulfill an order\n'))@\io.
+?- fmt_write('%S', args('  %try_move(robot1,1,0)       - Move robot one step\n'))@\io.
+?- fmt_write('%S', args('  %try_pickup(robot1,shelf_A1) - Pick up a shelf\n'))@\io.
+?- fmt_write('%S', args('  %try_deliver(robot1,item,qty,order) - Deliver item\n'))@\io.
+?- fmt_write('%S', args('\n'))@\io.
+
+// Run reports manually after loading dependencies:
+//   %safety_report.
+//   %ml_report.
+
+
+// ============================================================================
+// END OF FILE
+// ============================================================================
+

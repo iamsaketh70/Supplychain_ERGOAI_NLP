@@ -108,6 +108,7 @@ product_property(victorian_glass_hanging_tlight, fragile).
 product_property(rabbit_night_light, electronic).
 product_property(set_of_4_pantry_jelly_moulds, fragile).
 product_property(roses_regency_teacup_and_saucer, fragile).
+product_property(set_of_6_herb_tins_sketchbook, fragile).
 
 // Frozen items (intentionally placed outside freezer to trigger spoilage alerts)
 product_property(ice_cream_sundae_lip_gloss, frozen).
@@ -188,6 +189,7 @@ shelf_stock(shelf_D3, bleach_surface_cleaner, 25).
 // Lunch bags in zone A (far from their co-purchased items in zone B)
 shelf_stock(shelf_A4, lunch_bag_red_retrospot, 5).
 shelf_stock(shelf_A4, lunch_bag_woodland, 4).
+shelf_stock(shelf_A4, lunch_bag_cars_blue, 3).
 
 // Frozen item outside freezer (zone B instead of zone C)
 shelf_stock(shelf_B4, ice_cream_sundae_lip_gloss, 3).
@@ -224,5 +226,5 @@ order_line(order_1004, lunch_bag_cars_blue, 1).
 order_line(order_1004, red_retrospot_charlotte_bag, 1).
 
 // ---- INITIAL DELIVERY TRACKING ----
-// delivered(Order, Product, Qty) — starts empty, built up during fulfillment
-// (no initial facts — all zeros)
+// delivered(Order, Product, Qty) -- starts empty, built up during fulfillment
+// (no initial facts -- all zeros)

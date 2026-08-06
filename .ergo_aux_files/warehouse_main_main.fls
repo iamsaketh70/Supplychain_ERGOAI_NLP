@@ -1,0 +1,284 @@
+flora_symbol(fmt_write,2,'\\io',720,110,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(order_report,0,\@,5026,640,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol(robot_position,3,\@,58,36,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  WARNING: Heavy item %S on %S at level %S
+',0,\@,4475,589,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(loc,2,\@,2786,376,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(robot_is_loaded,1,\@,69,38,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(humidity_damage,0,\@,2715,369,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %fulfill_order(order_1001)  - Fulfill an order
+',0,\@,5735,722,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(is_highway,2,\@,1154,169,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %S (%S) <-> %S (%S)
+',0,\@,4899,626,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(can_pickup,2,\@,833,129,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(robot,1,\@,76,39,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(shelf_collision,0,\@,2375,322,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('[HAZMAT REACTIONS]
+',0,\@,4344,579,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(robot_report,0,\@,5411,692,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol(order_line,3,\@,1502,218,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(not_at_shelf,0,\@,919,141,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(fragile_risk,0,\@,2969,400,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(optimal_zone_for,3,\@,3325,451,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(fulfill_line,4,\@,3950,538,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol('System loaded successfully.
+',0,\@,5615,714,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(not_carrying_shelf,0,\@,1719,244,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %S: ordered=%S delivered=%S remaining=0
+',0,\@,5182,657,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(hazmat_reaction,0,\@,2507,346,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+[MOVE RECOMMENDATIONS]
+',0,\@,4927,628,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(order_status,2,\@,3546,484,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+====================================================
+',0,\@,4302,575,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %safety_report     - Show all safety violations
+',0,\@,5645,716,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(oxidizer,0,\@,2526,347,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(electronic_in_freezer,0,\@,3029,407,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('NAV: Robot %S already at (%S,%S)
+',0,\@,3866,526,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('[CO-LOCATION ALERTS]
+',0,\@,4872,624,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('Available commands:
+',0,\@,5630,715,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  WARNING: Frozen item %S on %S in non-freezer %S
+',0,\@,4423,585,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(not_carrying,0,\@,1209,176,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(remaining_need,3,\@,1489,217,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(target_cell,5,\@,118,47,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('========================================
+',0,\@,4179,557,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(frozen,0,\@,2605,355,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(order_zone_count,2,\@,3383,459,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(robot1,0,\@,4220,561,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(ml_distance_alert,3,\@,3432,467,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %ml_report         - Show ML optimization recommendations
+',0,\@,5660,717,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(can_deliver,4,\@,1555,225,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(shelf_level,2,\@,2697,365,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+
+',0,\@,5540,709,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(order,1,\@,1577,227,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(product_not_on_shelf,0,\@,1758,249,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('           WAREHOUSE INVENTORY REPORT
+',0,\@,5257,668,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(try_deliver,4,\@,2169,293,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %try_deliver(robot1,item,qty,order) - Deliver item
+',0,\@,5780,725,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(robot_is_unloaded,1,\@,97,43,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('ORDER %S COMPLETE
+',0,\@,4252,564,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(has_remaining_need,1,\@,3564,486,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(putdown,2,\@,1358,196,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol('  Already fulfilled: %S
+',0,\@,4236,562,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %S requires visiting %S zone(s)
+',0,\@,4997,634,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('ACTION: Robot %S put down %S
+',0,\@,1403,200,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('          WAREHOUSE SAFETY REPORT
+',0,\@,4316,576,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  Line complete: %S x%S
+',0,\@,4116,550,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %S at (%S,%S) carrying: %S
+',0,\@,5491,700,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('BLOCKED: Robot %S putdown of %S denied - %S
+',0,\@,1465,207,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(move_blocked,4,\@,189,55,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(can_putdown,2,\@,1109,164,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  CRITICAL: %S blocking highway at (%S,%S)
+',0,\@,4735,609,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('BLOCKED: Robot %S pickup of %S denied - %S
+',0,\@,1089,159,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(robot_collision,0,\@,242,61,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(heavy,0,\@,2674,363,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('%S',0,\@,4146,555,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(spoilage_risk,0,\@,2586,354,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(protocol_error,0,\@,2847,384,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(in_progress,0,\@,3574,488,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(product_property,2,\@,2521,347,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  Source: %S at (%S,%S) in %S
+',0,\@,4024,543,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %inventory_report  - Show shelf inventory
+',0,\@,5690,719,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %S: ordered=%S delivered=%S remaining=%S
+',0,\@,5156,654,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(can_move,3,\@,505,91,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(fragile,0,\@,2988,401,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+[PROTOCOL ERRORS]
+',0,\@,4760,611,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(pickup,2,\@,982,148,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol('ACTION: Robot %S picked up %S
+',0,\@,1027,152,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('FULFILLING ORDER: %S
+',0,\@,4160,556,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(full_report,0,\@,5395,684,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol(inventory_report,0,\@,5232,666,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol(state_violation,2,\@,2435,330,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(state_violation,5,\@,2311,314,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(state_violation,4,\@,2268,308,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(pickup_blocked,3,\@,887,136,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(within_grid,2,\@,170,52,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(pending,0,\@,3601,493,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+--- Fulfilling: %S x%S for %S ---
+',0,\@,3968,539,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %try_move(robot1,1,0)       - Move robot one step
+',0,\@,5750,723,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %S  qty=%S
+',0,\@,5350,677,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(fulfill_order,1,\@,4131,553,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol('  WARNING: Electronic %S on %S in %S
+',0,\@,4631,601,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(on_highway,0,\@,1249,182,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(shelf_position,3,\@,428,80,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+========================================
+',0,\@,4151,555,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(try_putdown,2,\@,1417,202,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol(flammable,0,\@,2535,348,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(high,0,\@,2771,373,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('             ROBOT STATUS REPORT
+',0,\@,5436,694,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  WARNING: Paper item %S on %S in humid %S
+',0,\@,4527,593,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('Order %S: %S
+',0,\@,5094,648,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  CRITICAL: %S and %S at %S
+',0,\@,4683,605,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(deliver,4,\@,1975,276,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol(robot_at,3,\@,45,36,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(zone_humidity,2,\@,2766,373,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('       ML-DRIVEN OPTIMIZATION REPORT
+',0,\@,4844,621,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  CAUTION: Fragile item %S on %S at level %S
+',0,\@,4579,597,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(other_shelf_at,3,\@,1165,170,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(robot_carries,2,\@,82,40,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+[HIGHWAY BLOCKAGES]
+',0,\@,4708,607,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %robot_report      - Show robot positions
+',0,\@,5705,720,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+[ROBOT COLLISIONS]
+',0,\@,4656,603,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(already_carrying,0,\@,889,136,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+[ELECTRONIC IN FREEZER]
+',0,\@,4604,599,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('            ORDER STATUS REPORT
+',0,\@,5051,642,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(delivered,3,\@,1516,219,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(none,0,\@,95,41,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(ml_partner_count_in_zone,3,\@,3245,439,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(fulfilled,0,\@,3551,484,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('============================================================
+',0,\@,5555,710,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %order_report      - Show order statuses
+',0,\@,5675,718,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+[FRAGILE RISKS]
+',0,\@,4552,595,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+[ORDER PICKING EFFICIENCY]
+',0,\@,4976,632,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  SUGGEST: Move %S from %S to %S
+',0,\@,4951,630,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+[HUMIDITY DAMAGE RISKS]
+',0,\@,4500,591,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(grid_boundary,0,\@,191,55,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('====================================================
+',0,\@,5225,662,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  CRITICAL: %S + %S on %S
+',0,\@,4371,581,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  SMART WAREHOUSE OPTIMIZATION SYSTEM - ErgoAI
+',0,\@,5570,711,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(try_move,3,\@,746,114,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol(shelf_for_order_product,4,\@,3676,507,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(alert,4,\@,2505,346,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(position_swap,0,\@,301,68,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(shelf_in_zone,2,\@,2628,357,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(highway_block,0,\@,2816,380,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %full_report       - Run all reports
+',0,\@,5720,721,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+',0,\@,5209,660,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(insufficient_stock,0,\@,1818,256,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('ACTION: Robot %S moved from (%S,%S) to (%S,%S)
+',0,\@,722,110,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(zone_type,2,\@,2637,358,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(has_some_delivery,1,\@,3591,491,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('STATUS: %S
+',0,\@,4275,566,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('ACTION: Robot %S delivered %S x%S for %S from %S
+',0,\@,2146,290,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(robot_in_transit,1,\@,2451,332,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(shelf_stock,3,\@,1620,232,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(paper_goods,0,\@,2734,370,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(move_toward,3,\@,3723,513,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol('  ML-Driven Skip-Gram + Robot Automation + Safety
+',0,\@,5585,712,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(shelf_follows_robot,4,\@,2457,335,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(loaded_under_shelf,0,\@,390,77,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  %try_pickup(robot1,shelf_A1) - Pick up a shelf
+',0,\@,5765,724,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+[HEAVY FALL RISKS]
+',0,\@,4448,587,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(args,1,'\\io',4149,555,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(args,3,'\\io',1092,160,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(args,2,'\\io',1030,152,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(args,4,'\\io',809,120,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(args,5,'\\io',725,111,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(unsafe_movement,0,\@,2896,391,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(unloaded_at_picking,0,\@,458,85,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('============================================================
+
+',0,\@,5600,713,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(race_condition,0,\@,2437,330,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(item_in_zone,2,\@,3093,419,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(ml_recommend_move,3,\@,3210,435,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(ml_report,0,\@,4819,619,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol(deliver_blocked,5,\@,1664,238,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(is_picking_station,2,\@,496,88,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('
+[SPOILAGE RISKS]
+',0,\@,4396,583,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(frequently_bought_together,2,\@,3176,429,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(freezer,0,\@,2650,359,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(item_on_shelf,2,\@,3131,424,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(exceeds_order_need,0,\@,1883,264,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(shelf,1,\@,849,131,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(zone,1,\@,3232,437,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(shelf_on_highway,0,\@,2270,308,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(try_pickup,2,\@,1041,154,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol(ml_colocation_alert,4,\@,3160,428,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('====================================================
+
+',0,\@,4330,577,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(not_at_picking_station,0,\@,1666,238,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(grid_cell,2,\@,180,52,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('%S at (%S,%S) in %S:
+',0,\@,5312,675,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('  ERROR: Unloaded %S at picking station (%S,%S)
+',0,\@,4787,613,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(move,3,\@,568,98,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol('BLOCKED: Delivery of %S x%S for %S denied - %S
+',0,\@,2241,298,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(heavy_fall_risk,0,\@,2655,362,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(safety_report,0,\@,4291,574,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol(putdown_blocked,3,\@,1207,176,predicate_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(electronic,0,\@,3048,408,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(navigate_to,3,\@,3886,530,predicate_symbol,transactional_symbol,'warehouse_main.ergo').
+flora_symbol(wrong_product,0,\@,1932,270,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol(shelf_occupied,0,\@,1303,189,function_symbol,nontransactional_symbol,'warehouse_main.ergo').
+flora_symbol('BLOCKED: Robot %S move (%S,%S) denied - %S
+',0,\@,806,119,function_symbol,nontransactional_symbol,'warehouse_main.ergo').

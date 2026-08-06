@@ -1,0 +1,5 @@
+%% #include info for source file: C:/Users/Saket/OneDrive/Desktop/WarehouseProject/warehouse_run.ergo
+
+
+:-(multifile(/('_$_$_ergo''include_prj_info',2))).
+'_$_$_ergo''include_prj_info'('C:/Users/Saket/OneDrive/Desktop/WarehouseProject/warehouse_run.ergo',null).

@@ -1,0 +1,645 @@
+/************************************************************************
+  file: includes/flrheader.flh
+
+  Author(s): Guizhen Yang
+	     Michael Kifer
+
+  Copyright (C) by
+       The Research Foundation of the State University of New York, 1999-2013.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+       http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+
+  This file is automatically included by the FLORA-2 compiler.
+************************************************************************/
+
+
+/************************************************************************
+  Note: This file should contain Macros only!
+
+  If FLORA_DUMP is defined: preprocessing for user-friendly output.
+
+  If any of these macros are changed, the corresponding wrappers in
+  flrwrapper.P must also be changed
+************************************************************************/
+
+
+
+
+/* File:      flora_prefix.flh -- FLORA-2 prefixes
+**
+** Author(s): Michael Kifer
+**	      Guizhen Yang
+**
+** Contact:   see  ../CONTACTS.txt
+**
+** Copyright (C) by
+**      The Research Foundation of the State University of New York, 1999-2023;
+**      and Vulcan, Inc., 2008-2013.
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**      http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+**
+**
+*/
+
+
+/******************************************************************************
+  Flora prefix
+
+  All Flora symbols begin with this prefix.
+******************************************************************************/
+/* Prefix for F-logic and HiLog predicates */
+
+/* File:   flrincludes/flrproduct.P  -- the Ergo hook for all kinds of
+**                                      product-related things
+**
+** Author(s): Michael Kifer
+**
+** Contact:   see  ../CONTACTS.txt
+**
+** Copyright (C) Coherent Knowledge Systems, LLC, 2013-2023.
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**      http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+**
+**
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/******************************************************************************
+  Attaching FLORA_PREFIX
+
+  The argument to this Macro should be quoted.
+******************************************************************************/
+
+
+
+
+/******************************************************************************
+  Strings following FLORA_PREFIX
+
+  These strings should be quoted.
+******************************************************************************/
+/* Keep "mod" in the name of a formula wrapper right after FLORA_PREFIX
+   We rely on this to identify meta wrappers */
+
+
+
+/*  Trie for keeping skeletons of defined facts -- debugging */
+
+
+/*  Trie for storing used symbols names */
+
+
+
+
+/******************************************************************************
+  Module and trie prefixes
+******************************************************************************/
+/* prefix to construct Flora module predicates. */
+
+
+/*  prefix to name Flora storage trie for a module. */
+
+
+
+/* prefix to name Flora fld storage trie for a module. */
+
+
+/* prefix to name Flora fls storage trie for a module. */
+
+
+
+/****************************************************************************
+  F-logic atom prefixes for predicates that are used to distinguish F-logic
+  wrappers in the trailers, the user program, base facts, etc.
+****************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/******************************************************************************
+  Lengths of prefixes of F-logic wrappers
+******************************************************************************/
+
+
+
+/****************************************************************************
+  Prefixes that are used for F-logic wrappers in rule bodies of user programs.
+  They are called "debuggin prefixes" because they were introduced to help
+  implement the debugging feature that catches undefined methods.
+  Note:
+     naf^, dyna^, dynz^ are the outermost prefixes
+     neg^ is the next outermost
+****************************************************************************/
+
+
+
+
+
+
+
+
+
+
+/* Prefixes used for checking undefinedness */
+
+
+
+/* Corresponding 1-arg macros */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/******* these are used in inheritance closure axioms *******/
+
+
+
+
+
+
+
+
+
+/******* these are for transactions in LIBMOD *******/
+
+
+
+
+
+
+
+/******************************************************************************
+  Lengths of prefixes that are used in the wrappers to the left of module name
+
+  Note: We need to remember that these prefixes are enclosed in quotes.
+        But we need the actual atom length that Prolog uses. So, we deduct 2.
+******************************************************************************/
+
+
+
+/* length of FLORA_PREFIX'FLORA_MODULE_TAG */
+
+
+
+
+
+
+
+
+
+
+
+
+
+%% support for undefinedness checks
+
+
+%% used for generating new oids statically
+%% We had previously #1'FLORA_COMPILATION_ID', but this caused gpp error in
+%% \dump(file). Apparently a gpp bug. So changed to X'FLORA_COMPILATION_ID'
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* File:    flrincludes/ergo_structdb.flh -- include file for rule structure DB
+**
+** Author(s): Michael Kifer
+**
+** Contact:   see  ../CONTACTS.txt
+**
+** Copyright (C) Coherent Knowledge Systems, LLC, 2016.
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**      http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+**
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+'_$_$_ergo''prop_descriptor'(4,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(4,'warehouse_main.ergo','main',4,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(4,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(4,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(6,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(6,'warehouse_main.ergo','main',6,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(6,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(6,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(8,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(8,'warehouse_main.ergo','main',8,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(8,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(8,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(10,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(10,'warehouse_main.ergo','main',10,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(10,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(10,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(12,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(12,'warehouse_main.ergo','main',12,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(12,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(12,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(14,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(14,'warehouse_main.ergo','main',14,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(14,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(14,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(16,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(16,'warehouse_main.ergo','main',16,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(16,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(16,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(18,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(18,'warehouse_main.ergo','main',18,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(18,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(18,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(20,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(20,'warehouse_main.ergo','main',20,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(20,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(20,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(22,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(22,'warehouse_main.ergo','main',22,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(22,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(22,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(24,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(24,'warehouse_main.ergo','main',24,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(24,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(24,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(26,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(26,'warehouse_main.ergo','main',26,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(26,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(26,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(28,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(28,'warehouse_main.ergo','main',28,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(28,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(28,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(30,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(30,'warehouse_main.ergo','main',30,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(30,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(30,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(32,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(32,'warehouse_main.ergo','main',32,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(32,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(32,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(34,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(34,'warehouse_main.ergo','main',34,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(34,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(34,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(36,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(36,'warehouse_main.ergo','main',36,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(36,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(36,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(38,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(38,'warehouse_main.ergo','main',38,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(38,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(38,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(40,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(40,'warehouse_main.ergo','main',40,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(40,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(40,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(42,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(42,'warehouse_main.ergo','main',42,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(42,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(42,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(44,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(44,'warehouse_main.ergo','main',44,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(44,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(44,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(46,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(46,'warehouse_main.ergo','main',46,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(46,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(46,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(48,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(48,'warehouse_main.ergo','main',48,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(48,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(48,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(50,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(50,'warehouse_main.ergo','main',50,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(50,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(50,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(52,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(52,'warehouse_main.ergo','main',52,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(52,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(52,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(54,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(54,'warehouse_main.ergo','main',54,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(54,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(54,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(56,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(56,'warehouse_main.ergo','main',56,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(56,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(56,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(58,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(58,'warehouse_main.ergo','main',58,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(58,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(58,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(60,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(60,'warehouse_main.ergo','main',60,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(60,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(60,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(62,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(62,'warehouse_main.ergo','main',62,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(62,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(62,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(64,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(64,'warehouse_main.ergo','main',64,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(64,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(64,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(66,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(66,'warehouse_main.ergo','main',66,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(66,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(66,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(68,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(68,'warehouse_main.ergo','main',68,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(68,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(68,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(70,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(70,'warehouse_main.ergo','main',70,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(70,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(70,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(72,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(72,'warehouse_main.ergo','main',72,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(72,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(72,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(74,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(74,'warehouse_main.ergo','main',74,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(74,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(74,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(76,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(76,'warehouse_main.ergo','main',76,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(76,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(76,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(78,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(78,'warehouse_main.ergo','main',78,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(78,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(78,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(80,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(80,'warehouse_main.ergo','main',80,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(80,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(80,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(82,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(82,'warehouse_main.ergo','main',82,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(82,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(82,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(84,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(84,'warehouse_main.ergo','main',84,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(84,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(84,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(86,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(86,'warehouse_main.ergo','main',86,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(86,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(86,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(88,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(88,'warehouse_main.ergo','main',88,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(88,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(88,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(90,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(90,'warehouse_main.ergo','main',90,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(90,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(90,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(92,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(92,'warehouse_main.ergo','main',92,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(92,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(92,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(94,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(94,'warehouse_main.ergo','main',94,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(94,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(94,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(96,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(96,'warehouse_main.ergo','main',96,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(96,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(96,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(98,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(98,'warehouse_main.ergo','main',98,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(98,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(98,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(100,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(100,'warehouse_main.ergo','main',100,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(100,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(100,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(102,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(102,'warehouse_main.ergo','main',102,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(102,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(102,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(104,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(104,'warehouse_main.ergo','main',104,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(104,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(104,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(106,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(106,'warehouse_main.ergo','main',106,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(106,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(106,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(108,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(108,'warehouse_main.ergo','main',108,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(108,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(108,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(110,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(110,'warehouse_main.ergo','main',110,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(110,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(110,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(112,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(112,'warehouse_main.ergo','main',112,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(112,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(112,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(114,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(114,'warehouse_main.ergo','main',114,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(114,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(114,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(116,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(116,'warehouse_main.ergo','main',116,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(116,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(116,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(118,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(118,'warehouse_main.ergo','main',118,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(118,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(118,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(120,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(120,'warehouse_main.ergo','main',120,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(120,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(120,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(122,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(122,'warehouse_main.ergo','main',122,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(122,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(122,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(124,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(124,'warehouse_main.ergo','main',124,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(124,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(124,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(126,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(126,'warehouse_main.ergo','main',126,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(126,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(126,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(128,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(128,'warehouse_main.ergo','main',128,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(128,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(128,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(130,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(130,'warehouse_main.ergo','main',130,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(130,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(130,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(132,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(132,'warehouse_main.ergo','main',132,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(132,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(132,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(134,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(134,'warehouse_main.ergo','main',134,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(134,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(134,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(136,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(136,'warehouse_main.ergo','main',136,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(136,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(136,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(138,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(138,'warehouse_main.ergo','main',138,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(138,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(138,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(140,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(140,'warehouse_main.ergo','main',140,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(140,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(140,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(142,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(142,'warehouse_main.ergo','main',142,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(142,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(142,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(144,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(144,'warehouse_main.ergo','main',144,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(144,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(144,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(146,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(146,'warehouse_main.ergo','main',146,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(146,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(146,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(148,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(148,'warehouse_main.ergo','main',148,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(148,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(148,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(150,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(150,'warehouse_main.ergo','main',150,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(150,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(150,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').
+'_$_$_ergo''prop_descriptor'(152,'warehouse_main.ergo','main',type,rule,'_$_$_ergo''descr_vars').
+'_$_$_ergo''tag_descriptor'(152,'warehouse_main.ergo','main',152,'_$_$_ergo''descr_vars').
+'_$_$_ergo''rule_enabled'(152,'warehouse_main.ergo','main').
+'_$_$_ergo''bool_descriptor'(152,'warehouse_main.ergo','main',strict,'_$_$_ergo''descr_vars').

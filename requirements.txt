@@ -1,0 +1,25 @@
+# =============================================================================
+# Smart Warehouse AI Multi-Agent System - Dependencies
+# =============================================================================
+
+# LLM - HuggingFace models (downloaded and run locally)
+transformers>=4.40.0
+langchain-huggingface>=0.1.0
+
+# Agent Orchestration
+langgraph>=0.2.0
+langchain>=0.3.0
+langchain-core>=0.3.0
+langchain-openai>=0.2.0
+
+# Deep Learning
+torch>=2.0.0
+
+# ML & Data
+pandas>=2.0.0
+numpy>=1.26.0
+scikit-learn>=1.4.0
+
+# Utilities
+mlxtend>=0.23.0
+matplotlib>=3.8.0
