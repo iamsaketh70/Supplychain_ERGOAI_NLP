@@ -5,7 +5,7 @@
 **Role**: Research Assistant  
 **Duration**: 1 Year  
 **Domain**: AI/ML for Autonomous Warehouse Systems  
-**Advisor/Lab**: [Your Professor/Lab Name]
+**Advisor/Lab**: Knowledgesystem Labs
 
 ---
 
